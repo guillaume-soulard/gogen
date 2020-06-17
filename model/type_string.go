@@ -1,11 +1,11 @@
-package types
+package model
 
 import (
 	"./reggen"
 )
 
 type StringType struct {
-	pattern string
+	pattern         string
 	stringGenerator *reggen.Generator
 }
 
@@ -17,10 +17,10 @@ func (s *StringType) Generate(context *GeneratorContext) (result interface{}, er
 		}
 		s.stringGenerator = stringGenerator
 	}
-	return s.stringGenerator.Generate(2147483647 ), err
+	return s.stringGenerator.Generate(2147483647), err
 }
 
-type StringTypeFactory struct {}
+type StringTypeFactory struct{}
 
 func (s StringTypeFactory) DefaultOptions() TypeOptions {
 	defaultOptions := TypeOptions{}
@@ -28,10 +28,9 @@ func (s StringTypeFactory) DefaultOptions() TypeOptions {
 	return defaultOptions
 }
 
-func (s StringTypeFactory) New(parameters TypeFactoryParameter)  (generator TypeGenerator, err error) {
+func (s StringTypeFactory) New(parameters TypeFactoryParameter) (generator TypeGenerator, err error) {
 	pattern := parameters.Options.GetOptionAsString("pattern")
 	return &StringType{
 		pattern: pattern,
 	}, err
 }
-

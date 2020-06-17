@@ -1,4 +1,4 @@
-package types
+package model
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -36,7 +36,7 @@ func Test_Generate_should_generate_a_date(t *testing.T) {
 		Options: map[string]interface{}{
 			"bounds.min": "2020-06-11T14:32:24",
 			"bounds.max": "2020-06-11T14:32:24",
-			"truncate": "milliseconds",
+			"truncate":   "milliseconds",
 		},
 	})
 	// WHEN

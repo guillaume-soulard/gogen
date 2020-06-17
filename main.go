@@ -1,7 +1,7 @@
 package main
 
 import (
-	. "./types"
+	. "./model"
 	"encoding/json"
 	"fmt"
 	"github.com/labstack/gommon/log"

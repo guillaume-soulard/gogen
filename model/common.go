@@ -1,4 +1,4 @@
-package types
+package model
 
 import (
 	"hash/fnv"
@@ -44,24 +44,24 @@ var TypeFactories = TypeGeneratorFactory{
 	},
 }
 
-type GeneratorContext struct{
+type GeneratorContext struct {
 	Config Configuration
-	Rand *rand.Rand
+	Rand   *rand.Rand
 }
 
 func (gc GeneratorContext) GenerateIntegerBetween(min int, max int) int {
-	return min + gc.Rand.Intn(max - min + 1)
+	return min + gc.Rand.Intn(max-min+1)
 }
 
 func (gc GeneratorContext) GenerateInteger64Between(min int64, max int64) int64 {
-	return min + gc.Rand.Int63n(max - min + 1)
+	return min + gc.Rand.Int63n(max-min+1)
 }
 
 func (gc GeneratorContext) GenerateFloatBetween(min float64, max float64) float64 {
-	return min + gc.Rand.Float64() * (max - min)
+	return min + gc.Rand.Float64()*(max-min)
 }
 
-func NewGenerationContext(config Configuration) (result GeneratorContext, err error)  {
+func NewGenerationContext(config Configuration) (result GeneratorContext, err error) {
 	h := fnv.New32a()
 	var seed int64
 	if config.Options.Seed != "" {

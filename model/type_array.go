@@ -1,4 +1,4 @@
-package types
+package model
 
 import (
 	"errors"
@@ -51,8 +51,8 @@ func (a ArrayTypeFactory) New(parameters TypeFactoryParameter) (generator TypeGe
 		return generator, errors.New(fmt.Sprintf("bounds.min = %d is greater than bounds.max = %d", min, max))
 	}
 	return &ArrayType{
-		minBound: min,
-		maxBound: max,
+		minBound:      min,
+		maxBound:      max,
 		itemGenerator: parameters.Options.GetOptionAsInterface(ArrayGeneratorOptionName).(ObjectModel),
 	}, err
 }

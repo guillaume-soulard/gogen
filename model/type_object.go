@@ -1,4 +1,4 @@
-package types
+package model
 
 import "sort"
 
@@ -20,19 +20,18 @@ func (o *ObjectType) Generate(context *GeneratorContext) (result interface{}, er
 	return generatedObject, err
 }
 
-type ObjectTypeFactory struct {}
+type ObjectTypeFactory struct{}
 
 func (o ObjectTypeFactory) DefaultOptions() TypeOptions {
 	return TypeOptions{}
 }
 
-func (o ObjectTypeFactory) New(parameters TypeFactoryParameter)  (generator TypeGenerator, err error) {
+func (o ObjectTypeFactory) New(parameters TypeFactoryParameter) (generator TypeGenerator, err error) {
 	fields := parameters.Options[ObjectFieldsTemplatesOptionName].([]FieldModel)
-	sort.Slice(fields, func (i int, j int) bool {
+	sort.Slice(fields, func(i int, j int) bool {
 		return fields[i].FieldName < fields[j].FieldName
 	})
 	return &ObjectType{
 		fieldTemplates: fields,
 	}, err
 }
-

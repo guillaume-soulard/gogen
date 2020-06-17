@@ -1,4 +1,4 @@
-package types
+package model
 
 import (
 	"errors"
@@ -47,7 +47,7 @@ func (n NumberTypeFactory) DefaultOptions() TypeOptions {
 	return defaultOptions
 }
 
-func (n NumberTypeFactory) New(parameters TypeFactoryParameter)  (generator TypeGenerator, err error) {
+func (n NumberTypeFactory) New(parameters TypeFactoryParameter) (generator TypeGenerator, err error) {
 	min := parameters.Options.GetOptionAsFloat("bounds.min")
 	max := parameters.Options.GetOptionAsFloat("bounds.max")
 	if min > max {

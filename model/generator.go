@@ -1,7 +1,6 @@
-package main
+package model
 
 import (
-	. "./types"
 	"errors"
 	"fmt"
 	"strings"
@@ -34,7 +33,7 @@ func generateModel(configuration Configuration, fieldName string, template inter
 		}
 		result.Fields = append(result.Fields, FieldModel{
 			FieldName: fieldName,
-			Value: value,
+			Value:     value,
 		})
 	} else {
 		return result, errors.New(fmt.Sprintf("Unsupported type %s", fieldType))

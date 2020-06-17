@@ -1,4 +1,4 @@
-package types
+package model
 
 import "errors"
 
@@ -26,7 +26,7 @@ func (p *PickerType) Generate(context *GeneratorContext) (result interface{}, er
 		}
 		return object, err
 	} else {
-		index := context.GenerateIntegerBetween(0, len(p.items) - 1)
+		index := context.GenerateIntegerBetween(0, len(p.items)-1)
 		return p.items[index], err
 	}
 }

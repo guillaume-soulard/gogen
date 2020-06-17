@@ -1,4 +1,4 @@
-package types
+package model
 
 import (
 	"errors"
@@ -10,8 +10,8 @@ import (
 const dateFormat = "2006-01-02T15:04:05"
 
 type DateType struct {
-	min time.Time
-	max time.Time
+	min      time.Time
+	max      time.Time
 	truncate string
 }
 
@@ -25,7 +25,7 @@ func (d *DateType) Generate(context *GeneratorContext) (result interface{}, err 
 	return date, err
 }
 
-type DateTypeFactory struct {}
+type DateTypeFactory struct{}
 
 func (d DateTypeFactory) DefaultOptions() TypeOptions {
 	defaultOptions := TypeOptions{}
@@ -47,19 +47,24 @@ func (d DateTypeFactory) New(parameters TypeFactoryParameter) (generator TypeGen
 		return generator, errors.New(fmt.Sprintf("bounds.min = %s is greater than bounds.max = %s", min.Format(dateFormat), max.Format(dateFormat)))
 	}
 	return &DateType{
-		min: min,
-		max: max,
+		min:      min,
+		max:      max,
 		truncate: parameters.Options.GetOptionAsString("truncate"),
 	}, err
 }
 
 func getDurationFrom(truncation string) (result time.Duration, err error) {
 	switch strings.ToLower(truncation) {
-	case "milliseconds": result = time.Millisecond
-	case "seconds": result =  time.Second
-	case "minutes": result =  time.Minute
-	case "hours": result =  time.Hour
-	default: err = errors.New(fmt.Sprintf("unsupported truncate %s", truncation))
+	case "milliseconds":
+		result = time.Millisecond
+	case "seconds":
+		result = time.Second
+	case "minutes":
+		result = time.Minute
+	case "hours":
+		result = time.Hour
+	default:
+		err = errors.New(fmt.Sprintf("unsupported truncate %s", truncation))
 	}
 	return result, err
 }
