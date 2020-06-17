@@ -1,0 +1,20 @@
+{
+  "template": {
+    "_type": "array",
+    "options": {
+      "bounds": {
+        "min": 100,
+        "max": 100
+      },
+      "itemTemplate": {
+        "_type": "picker",
+        "options": {
+          "items": [
+            true,
+            false
+          ]
+        }
+      }
+    }
+  }
+}

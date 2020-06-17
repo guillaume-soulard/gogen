@@ -1,0 +1,19 @@
+{
+  "template": {
+    "_type": "number",
+    "options": {
+      "bounds": {
+        "min": 0,
+        "max": 9999999999
+      },
+      "sequence": {
+        "enable": true,
+        "cycle": true,
+        "increment": 10
+      }
+    }
+  },
+  "options": {
+    "amount": 10
+  }
+}

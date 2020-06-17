@@ -1,0 +1,10 @@
+{
+  "template": {
+    "id": 1,
+    "name": "test",
+    "city": {
+      "id": 2,
+      "cityName": "Paris"
+    }
+  }
+}
