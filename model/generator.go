@@ -8,11 +8,67 @@ import (
 
 func GenerateModel(configuration Configuration) (result Model, err error) {
 	var model ObjectModel
+	var aliases map[string]interface{}
+	if aliases, err = generateAliases(configuration); err != nil {
+		return result, err
+	}
+	configuration.TemplateConfiguration = replaceAliasesInTemplate(aliases, configuration.TemplateConfiguration)
 	if model, err = generateModel(configuration, "template", configuration.TemplateConfiguration); err != nil {
 		return result, err
 	}
 	result.ObjectModel = model
 	return result, err
+}
+
+func replaceAliasesInTemplate(aliases map[string]interface{}, template interface{}) interface{} {
+	if objectMap, isMap := template.(map[string]interface{}); isMap {
+		newTemplate := make(map[string]interface{})
+		for fieldName, fieldValue := range objectMap {
+			typeName := getTypeName(fieldValue)
+			if isTypeField(fieldValue) && isAlias(typeName, aliases) {
+				fieldValue = aliases[typeName]
+			}
+			fieldValue = replaceAliasesInTemplate(aliases, fieldValue)
+			newTemplate[fieldName] = fieldValue
+		}
+		return newTemplate
+	}
+	return template
+}
+
+func isTypeField(template interface{}) bool {
+	if objectMap, isMap := template.(map[string]interface{}); isMap {
+		for fieldName, _ := range objectMap {
+			if fieldName == "_type" {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func getTypeName(template interface{}) string {
+	if objectMap, isMap := template.(map[string]interface{}); isMap {
+		for fieldName, fieldValue := range objectMap {
+			if _, isString := fieldValue.(string); fieldName == "_type" && isString {
+				return fieldValue.(string)
+			}
+		}
+	}
+	return ""
+}
+
+func isAlias(name string, aliases map[string]interface{}) bool {
+	_, contains := aliases[name]
+	return contains
+}
+
+func generateAliases(configuration Configuration) (aliases map[string]interface{}, err error) {
+	aliases = make(map[string]interface{})
+	for aliasName, alias := range configuration.Options.Alias {
+		aliases[aliasName] = alias.TemplateConfiguration
+	}
+	return aliases, err
 }
 
 func generateModel(configuration Configuration, fieldName string, template interface{}) (result ObjectModel, err error) {

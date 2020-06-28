@@ -23,6 +23,38 @@
             "pattern": "[0-9]{4}[a-z]{4}"
           }
         }
+      },
+      "bool": {
+        "template": {
+          "_type": "picker",
+          "options": {
+            "items": [
+              true,
+              false
+            ]
+          }
+        }
+      },
+      "sequence-id": {
+        "template": {
+          "_type": "number",
+          "options": {
+            "bounds": {
+              "min": 1
+            },
+            "sequence": {
+              "enable": true
+            }
+          }
+        }
+      },
+      "email": {
+        "template": {
+          "_type": "string",
+          "options": {
+            "pattern": "[a-z]{10-25}@[a-z]{10-15}\\.(com|fr)"
+          }
+        }
       }
     }
   }
