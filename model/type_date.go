@@ -22,6 +22,7 @@ func (d *DateType) Generate(context *GeneratorContext) (result interface{}, err 
 		return result, err
 	}
 	date = date.Truncate(duration)
+	date = date.In(time.UTC)
 	return date, err
 }
 

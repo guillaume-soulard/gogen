@@ -1,14 +1,15 @@
 package model
 
 import (
-	"github.com/lucasjones/reggen"
+	"./reggen"
 	"github.com/stretchr/testify/assert"
+	"math/rand"
 	"testing"
 )
 
 func Test_Generate_should_generate_single_character_string_generation(t *testing.T) {
 	// GIVEN
-	generator, _ := reggen.NewGenerator("a")
+	generator, _ := reggen.NewGenerator("a", rand.New(rand.NewSource(0)))
 	stringType := StringType{
 		stringGenerator: generator,
 	}
@@ -20,7 +21,7 @@ func Test_Generate_should_generate_single_character_string_generation(t *testing
 
 func Test_Generate_should_generate_empty_string_when_pattern_is_empty(t *testing.T) {
 	// GIVEN
-	generator, _ := reggen.NewGenerator("")
+	generator, _ := reggen.NewGenerator("", rand.New(rand.NewSource(0)))
 	stringType := StringType{
 		stringGenerator: generator,
 	}
@@ -32,7 +33,7 @@ func Test_Generate_should_generate_empty_string_when_pattern_is_empty(t *testing
 
 func Test_Generate_should_generate_string_with_length_10(t *testing.T) {
 	// GIVEN
-	generator, _ := reggen.NewGenerator("[a-z]{10}")
+	generator, _ := reggen.NewGenerator("[a-z]{10}", rand.New(rand.NewSource(0)))
 	stringType := StringType{
 		stringGenerator: generator,
 	}
@@ -44,7 +45,7 @@ func Test_Generate_should_generate_string_with_length_10(t *testing.T) {
 
 func Test_Generate_should_generate_string_with_length_10_and_full_of_a(t *testing.T) {
 	// GIVEN
-	generator, _ := reggen.NewGenerator("[a]{10}")
+	generator, _ := reggen.NewGenerator("[a]{10}", rand.New(rand.NewSource(0)))
 	stringType := StringType{
 		stringGenerator: generator,
 	}

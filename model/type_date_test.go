@@ -23,8 +23,10 @@ func Test_Generate_should_generate_a_type_date(t *testing.T) {
 	generator, _ := factory.New(TypeFactoryParameter{
 		Options: factory.DefaultOptions(),
 	})
+	context, err := NewGenerationContext(Configuration{})
+	assert.NoError(t, err)
 	// WHEN
-	result, _ := generator.Generate(&GeneratorContext{})
+	result, _ := generator.Generate(&context)
 	// THEN
 	assert.IsType(t, time.Time{}, result)
 }
@@ -39,8 +41,10 @@ func Test_Generate_should_generate_a_date(t *testing.T) {
 			"truncate":   "milliseconds",
 		},
 	})
+	context, err := NewGenerationContext(Configuration{})
+	assert.NoError(t, err)
 	// WHEN
-	result, _ := generator.Generate(&GeneratorContext{})
+	result, _ := generator.Generate(&context)
 	// THEN
-	assert.Equal(t, time.Date(2099, time.December, 31, 23, 59, 59, 0, time.Local), result)
+	assert.Equal(t, time.Date(2020, time.June, 11, 14, 32, 24, 0, time.UTC), result)
 }

@@ -19,8 +19,7 @@ func main() {
 	}
 }
 
-func Execute(args []string) (err error) {
-	fileName := args[1]
+func ExecuteFile(fileName string) (err error) {
 	var config Configuration
 	if config, err = LoadConfigurationFromFile(fileName); err != nil {
 		return err
@@ -34,6 +33,10 @@ func Execute(args []string) (err error) {
 		return err
 	}
 	return result.Generate(&context)
+}
+
+func Execute(args []string) (err error) {
+	return ExecuteFile(args[1])
 }
 
 func LoadConfigurationFromFile(fileName string) (config Configuration, err error) {
