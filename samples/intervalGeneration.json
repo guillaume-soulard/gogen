@@ -8,7 +8,7 @@
     }
   },
   "options": {
-    "amount": 99999999999999999999999999,
+    "amount": 99,
     "generation": {
       "type": "interval",
       "options": {
