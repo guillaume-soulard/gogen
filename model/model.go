@@ -13,6 +13,7 @@ type Model struct {
 
 func (m Model) Generate(context *GeneratorContext) (err error) {
 	startTime := time.Now()
+	interval := context.Config.Options.Generation.Options.Interval
 	for i := 1; i <= context.Config.Options.Amount; i++ {
 		var generatedObject interface{}
 		if generatedObject, err = m.ObjectModel.Generate(context); err != nil {
@@ -25,6 +26,9 @@ func (m Model) Generate(context *GeneratorContext) (err error) {
 			return err
 		} else {
 			fmt.Println(string(jsonObject))
+		}
+		if interval > 0 {
+			time.Sleep(time.Millisecond * time.Duration(interval))
 		}
 	}
 	endTime := time.Now()

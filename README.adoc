@@ -1,12 +1,12 @@
-= Nebulajs
+= Gogen
 
-Nebula is a small an simple data generation tool
+Gogen is a small an simple data generation tool
 
 == Getting started
 
 [source,shell]
 ----
-npm install nebulajs
+go get -u github.com/ogama/gogen
 ----
 
 Create a new file named `numbers.json` for example :
@@ -23,10 +23,10 @@ Create a new file named `numbers.json` for example :
 }
 ----
 
-Run this comma
+Run this command
 [source,shell]
 ----
-nebula numbers.json
+gogen numbers.json
 ----
 
 Output
@@ -48,7 +48,7 @@ You can write more complex template to generate more complex data structure see 
 
 == Documentation
 
-Nebula is a template based data generator. You have to write a file in JSON format to describe your data.
+Gogen is a template based data generator. You have to write a file in JSON format to describe your data.
 
 Here is the JSON structure :
 

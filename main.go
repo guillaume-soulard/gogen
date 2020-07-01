@@ -1,4 +1,4 @@
-package gogen
+package main
 
 import (
 	"encoding/json"
@@ -24,6 +24,7 @@ func ExecuteFile(fileName string) (err error) {
 	if config, err = LoadConfigurationFromFile(fileName); err != nil {
 		return err
 	}
+	setDefaultValueInConfiguration(&config)
 	var result Model
 	if result, err = GenerateModel(config); err != nil {
 		return err
@@ -48,4 +49,10 @@ func LoadConfigurationFromFile(fileName string) (config Configuration, err error
 		return config, err
 	}
 	return config, err
+}
+
+func setDefaultValueInConfiguration(config *Configuration) {
+	if config.Options.Amount <= 0 {
+		config.Options.Amount = 10
+	}
 }
