@@ -1,10 +1,10 @@
 package gogen
 
 import (
-	. "./model"
 	"encoding/json"
 	"fmt"
 	"github.com/labstack/gommon/log"
+	. "github.com/ogama/gogen/model"
 	"io/ioutil"
 	"os"
 )

@@ -1,7 +1,7 @@
 package model
 
 import (
-	"./reggen"
+	"github.com/ogama/gogen/model/reggen"
 	"github.com/stretchr/testify/assert"
 	"math/rand"
 	"testing"

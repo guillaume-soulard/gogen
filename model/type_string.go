@@ -1,7 +1,7 @@
 package model
 
 import (
-	"./reggen"
+	"github.com/ogama/gogen/model/reggen"
 )
 
 type StringType struct {
