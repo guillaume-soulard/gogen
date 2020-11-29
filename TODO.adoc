@@ -1,0 +1,15 @@
+= TODO
+
+* Support of custom date format
+* Custom format :
+** Custom string format : "$.field1 $.field2.subField"
+** Built-in output :
+*** SQL
+*** CSV
+*** XML
+*** JSON (already implemented and by default)
+* Custom output :
+** Stdout (by default)
+** File(s)
+** Postgresql
+** Redis
