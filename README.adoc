@@ -132,13 +132,137 @@ You can change this behaviour by changing the generation.type global option.
 
 === Types
 
+To use a specific type generator just create a json object in the template and add the special field `_type` with the name of the type as value :
+
+[source,json]
+----
+{
+  "_type": "number",
+  "options": {
+    // specific type options see below
+  }
+}
+----
+
 ==== Number
+
+|===
+|Option|Description|Allowed value|Default value
+|bounds.min|The smallest number to generate.|number|0
+|bounds.max|The maximum number to generate.|number|10
+|decimal|The number precision for the decimal part of the number.|integer|0
+|sequence.enable|Enable the sequence behaviour for this generator.|boolean|false
+|sequence.cycle|If the sequence is enable, and if the sequence reach the `bounds.max` reset the sequence to `bounds.min` otherwise throw an error|boolean|true
+|sequence.increment|If the sequence is enable, specify the amount to increment between generations|number|1
+|===
+
+Example :
+
+[source,json]
+----
+{
+  "_type": "number",
+  "options": {
+    "bounds": {
+      "min": 100,
+      "max": 200
+    },
+      "decimal": 2,
+      "sequence": {
+      "enable": true,
+      "cycle": true,
+      "increment": 0.1
+    }
+  }
+}
+----
 
 ==== String
 
+|===
+|Option|Description|Allowed value|Default value
+|pattern|The regex pattern to use to generate the string.|A regex string|"[A-Z]{1}[A-Za-z]{10,25}"
+|===
+
+Example
+
+[source,json]
+----
+{
+  "template": {
+    "_type": "string",
+    "options": {
+      "pattern": "[a-z]{10}"
+    }
+  },
+  "options": {
+    "seed": "test"
+  }
+}
+----
+
 ==== Date
 
+|===
+|Option|Description|Allowed value|Default value
+|bounds.min|The smallest date to generate.|yyyy-MM-ddTHH:mm:ss|1970-01-01T00:00:00
+|bounds.max|The maximum date to generate.|yyyy-MM-ddTHH:mm:ss|2099-12-31T23:59:59
+|trucate|The describe how to truncate the date|`milliseconds`, `seconds`, `minutes`, `hours`|`milliseconds`
+|===
+
+Example
+
+[source,json]
+----
+{
+  "template": {
+    "_type": "date",
+    "options": {
+      "bounds": {
+        "min": "2020-06-11T14:32:24",
+        "max": "2020-06-11T14:32:24"
+      },
+      "truncate": "hours"
+    }
+  }
+}
+----
+
 ==== Array
+
+|===
+|Option|Description|Allowed value|Default value
+|bounds.min|The minimum amount of items to generate.|number|0
+|bounds.max|The maximum amount of items to generate.|number|10
+|itemTemplate|The template of the item to generate|json object template|nil
+|===
+
+Example
+
+[source,json]
+----
+{
+  "template": {
+    "_type": "array",
+    "options": {
+      "bounds": {
+        "min": 10,
+        "max": 10
+      },
+      "itemTemplate": {
+        "_type": "number",
+        "options": {
+          "sequence": {
+            "enable": true,
+            "cycle": true,
+            "increment": 1
+          }
+        }
+      }
+    }
+  }
+}
+----
 
 ==== Picker
 
