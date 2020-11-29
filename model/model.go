@@ -3,7 +3,6 @@ package model
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"time"
 )
 
@@ -32,6 +31,6 @@ func (m Model) Generate(context *GeneratorContext) (err error) {
 		}
 	}
 	endTime := time.Now()
-	log.Println(fmt.Sprintf("Generation end took : %s", endTime.Sub(startTime).String()))
+	fmt.Println(fmt.Sprintf("Generation end took : %s", endTime.Sub(startTime).String()))
 	return err
 }

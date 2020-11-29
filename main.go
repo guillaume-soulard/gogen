@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	if len(os.Args) != 2 {
+	if len(os.Args) < 2 {
 		fmt.Println("Argument missing file")
 		return
 	}
@@ -37,7 +37,12 @@ func ExecuteFile(fileName string) (err error) {
 }
 
 func Execute(args []string) (err error) {
-	return ExecuteFile(args[1])
+	for i := 1; i < len(os.Args); i++ {
+		if err = ExecuteFile(args[i]); err != nil {
+			return err
+		}
+	}
+	return err
 }
 
 func LoadConfigurationFromFile(fileName string) (config Configuration, err error) {
