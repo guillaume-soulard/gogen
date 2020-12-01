@@ -1,15 +1,31 @@
 = TODO
 
+* advanced cli options :
+** -e : estimate the dataset size
+** -l : limit the amount of bytes to generate
 * Support of custom date format
 * Custom format :
 ** Custom string format : "$.field1 $.field2.subField"
 ** Built-in output :
 *** SQL
 *** CSV
+**** Options
+***** separatorChar (default ',')
+***** quoteChar (default '"')
+***** quote (default "never") (values "never" | "always" | "strings")
+***** headers (true / false)
+*** YAML
 *** XML
+**** Options
+***** pretty (true / false)
+***** indent (true / false)
 *** JSON (already implemented and by default)
+**** Options
+***** pretty (true / false)
+***** indent (true / false)
 * Custom output :
 ** Stdout (by default)
 ** File(s)
 ** Postgresql
 ** Redis
+** Blackhole ?
