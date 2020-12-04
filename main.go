@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/labstack/gommon/log"
 	. "github.com/ogama/gogen/model"
+	"github.com/ogama/gogen/model/configuration"
 	"io/ioutil"
 	"os"
 )
@@ -20,7 +21,7 @@ func main() {
 }
 
 func ExecuteFile(fileName string) (err error) {
-	var config Configuration
+	var config configuration.Configuration
 	if config, err = LoadConfigurationFromFile(fileName); err != nil {
 		return err
 	}
@@ -45,7 +46,7 @@ func Execute(args []string) (err error) {
 	return err
 }
 
-func LoadConfigurationFromFile(fileName string) (config Configuration, err error) {
+func LoadConfigurationFromFile(fileName string) (config configuration.Configuration, err error) {
 	var data []byte
 	if data, err = ioutil.ReadFile(fileName); err != nil {
 		return config, err
@@ -56,7 +57,7 @@ func LoadConfigurationFromFile(fileName string) (config Configuration, err error
 	return config, err
 }
 
-func setDefaultValueInConfiguration(config *Configuration) {
+func setDefaultValueInConfiguration(config *configuration.Configuration) {
 	if config.Options.Amount <= 0 {
 		config.Options.Amount = 10
 	}

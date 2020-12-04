@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/ogama/gogen/model/configuration"
 	"hash/fnv"
 	"math/rand"
 	"time"
@@ -45,7 +46,7 @@ var TypeFactories = TypeGeneratorFactory{
 }
 
 type GeneratorContext struct {
-	Config Configuration
+	Config configuration.Configuration
 	Rand   *rand.Rand
 }
 
@@ -61,7 +62,7 @@ func (gc GeneratorContext) GenerateFloatBetween(min float64, max float64) float6
 	return min + gc.Rand.Float64()*(max-min)
 }
 
-func NewGenerationContext(config Configuration) (result GeneratorContext, err error) {
+func NewGenerationContext(config configuration.Configuration) (result GeneratorContext, err error) {
 	h := fnv.New32a()
 	var seed int64
 	if config.Options.Seed != "" {
@@ -99,7 +100,7 @@ type TypeFactory interface {
 }
 
 type TypeFactoryParameter struct {
-	Configuration Configuration
+	Configuration configuration.Configuration
 	Template      interface{}
 	Options       TypeOptions
 }

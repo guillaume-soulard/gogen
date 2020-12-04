@@ -3,10 +3,11 @@ package model
 import (
 	"errors"
 	"fmt"
+	"github.com/ogama/gogen/model/configuration"
 	"strings"
 )
 
-func GenerateModel(configuration Configuration) (result Model, err error) {
+func GenerateModel(configuration configuration.Configuration) (result Model, err error) {
 	var model ObjectModel
 	var aliases map[string]interface{}
 	if aliases, err = generateAliases(configuration); err != nil {
@@ -63,7 +64,7 @@ func isAlias(name string, aliases map[string]interface{}) bool {
 	return contains
 }
 
-func generateAliases(configuration Configuration) (aliases map[string]interface{}, err error) {
+func generateAliases(configuration configuration.Configuration) (aliases map[string]interface{}, err error) {
 	aliases = make(map[string]interface{})
 	for aliasName, alias := range configuration.Options.Alias {
 		aliases[aliasName] = alias.TemplateConfiguration
@@ -71,7 +72,7 @@ func generateAliases(configuration Configuration) (aliases map[string]interface{
 	return aliases, err
 }
 
-func generateModel(configuration Configuration, fieldName string, template interface{}) (result ObjectModel, err error) {
+func generateModel(configuration configuration.Configuration, fieldName string, template interface{}) (result ObjectModel, err error) {
 	fieldType := getFieldType(template)
 	if typeFactory, exists := TypeFactories.GetFactory(fieldType); exists {
 		var options TypeOptions
@@ -97,7 +98,7 @@ func generateModel(configuration Configuration, fieldName string, template inter
 	return result, err
 }
 
-func getOptions(fieldType string, template interface{}, configuration Configuration) (options TypeOptions, err error) {
+func getOptions(fieldType string, template interface{}, configuration configuration.Configuration) (options TypeOptions, err error) {
 	options = make(map[string]interface{})
 	if fieldType == "object" {
 		if err = objectSpecificGeneration(options, template, configuration); err != nil {
@@ -114,7 +115,7 @@ func getOptions(fieldType string, template interface{}, configuration Configurat
 	return options, err
 }
 
-func objectSpecificGeneration(options TypeOptions, template interface{}, configuration Configuration) (err error) {
+func objectSpecificGeneration(options TypeOptions, template interface{}, configuration configuration.Configuration) (err error) {
 	var objectFieldsTemplates []FieldModel
 	for fieldName, fieldValue := range template.(map[string]interface{}) {
 		var objectTemplate ObjectModel

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/ogama/gogen/model/configuration"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -8,7 +9,7 @@ import (
 func Test_Generate_should_generate_a_float_number(t *testing.T) {
 	// GIVEN
 	generator := NumberType{}
-	context, err := NewGenerationContext(Configuration{})
+	context, err := NewGenerationContext(configuration.Configuration{})
 	assert.NoError(t, err)
 	// WHEN
 	result, _ := generator.Generate(&context)
@@ -22,7 +23,7 @@ func Test_Generate_should_generate_0(t *testing.T) {
 		minBound: 0,
 		maxBound: 0,
 	}
-	context, err := NewGenerationContext(Configuration{})
+	context, err := NewGenerationContext(configuration.Configuration{})
 	assert.NoError(t, err)
 	// WHEN
 	result, _ := generator.Generate(&context)
@@ -36,7 +37,7 @@ func Test_Generate_should_generate_1(t *testing.T) {
 		minBound: 1,
 		maxBound: 1,
 	}
-	context, err := NewGenerationContext(Configuration{})
+	context, err := NewGenerationContext(configuration.Configuration{})
 	assert.NoError(t, err)
 	// WHEN
 	result, _ := generator.Generate(&context)
@@ -51,7 +52,7 @@ func Test_Generate_should_generate_1_dot_1(t *testing.T) {
 		maxBound: 1.1,
 		decimal:  1,
 	}
-	context, err := NewGenerationContext(Configuration{})
+	context, err := NewGenerationContext(configuration.Configuration{})
 	assert.NoError(t, err)
 	// WHEN
 	result, _ := generator.Generate(&context)
@@ -66,7 +67,7 @@ func Test_Generate_should_generate_1_dot_111(t *testing.T) {
 		maxBound: 1.11111,
 		decimal:  3,
 	}
-	context, err := NewGenerationContext(Configuration{})
+	context, err := NewGenerationContext(configuration.Configuration{})
 	assert.NoError(t, err)
 	// WHEN
 	result, _ := generator.Generate(&context)
@@ -81,7 +82,7 @@ func Test_Generate_should_generate_minus_1(t *testing.T) {
 		minBound: -1,
 		maxBound: -1,
 	}
-	context, err := NewGenerationContext(Configuration{})
+	context, err := NewGenerationContext(configuration.Configuration{})
 	assert.NoError(t, err)
 	// WHEN
 	result, _ := generator.Generate(&context)
@@ -96,7 +97,7 @@ func Test_Generate_should_generate_number_between_1_and_10(t *testing.T) {
 		minBound: 1,
 		maxBound: 10,
 	}
-	context, err := NewGenerationContext(Configuration{})
+	context, err := NewGenerationContext(configuration.Configuration{})
 	assert.NoError(t, err)
 	// WHEN
 	result, _ := generator.Generate(&context)
@@ -115,7 +116,7 @@ func Test_Generate_should_generate_number_trough_1_to_10_in_order(t *testing.T) 
 		sequenceIncrement: 1,
 		currentSequence:   1,
 	}
-	context, err := NewGenerationContext(Configuration{})
+	context, err := NewGenerationContext(configuration.Configuration{})
 	assert.NoError(t, err)
 	for i := 1; i <= 10; i++ {
 		// WHEN
@@ -138,7 +139,7 @@ func Test_Generate_should_generate_number_trough_1_to_5_in_order_twice(t *testin
 	}
 
 	// WHEN
-	context, err := NewGenerationContext(Configuration{})
+	context, err := NewGenerationContext(configuration.Configuration{})
 	assert.NoError(t, err)
 	result := make([]float64, 0)
 	for i := 1; i <= 10; i++ {

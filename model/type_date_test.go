@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/ogama/gogen/model/configuration"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -23,7 +24,7 @@ func Test_Generate_should_generate_a_type_date(t *testing.T) {
 	generator, _ := factory.New(TypeFactoryParameter{
 		Options: factory.DefaultOptions(),
 	})
-	context, err := NewGenerationContext(Configuration{})
+	context, err := NewGenerationContext(configuration.Configuration{})
 	assert.NoError(t, err)
 	// WHEN
 	result, _ := generator.Generate(&context)
@@ -41,7 +42,7 @@ func Test_Generate_should_generate_a_date(t *testing.T) {
 			"truncate":   "milliseconds",
 		},
 	})
-	context, err := NewGenerationContext(Configuration{})
+	context, err := NewGenerationContext(configuration.Configuration{})
 	assert.NoError(t, err)
 	// WHEN
 	result, _ := generator.Generate(&context)
