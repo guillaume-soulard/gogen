@@ -10,7 +10,7 @@ type BuilderJson struct{}
 
 func (b BuilderJson) Build(configuration configuration.FormatConfiguration) (result common.Format, err error) {
 	var pretty bool
-	pretty, err = configuration.Options.GetBoolOrDefault("pretty")
+	pretty, err = configuration.Options.GetBoolOrDefault("pretty", false)
 	result = FormatJson{pretty: pretty}
 	return result, err
 }

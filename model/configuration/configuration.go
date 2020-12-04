@@ -42,13 +42,17 @@ type GenerationOptions struct {
 
 type Options map[string]interface{}
 
-func (o Options) GetBoolOrDefault(option string) (result bool, err error) {
+func (o Options) GetBoolOrDefault(option string, defaultValue bool) (result bool, err error) {
 	var optionValue interface{}
 	optionValue = o.Get(option)
 	if optionBool, isBool := optionValue.(bool); isBool {
 		result = optionBool
 	} else if optionString, isString := optionValue.(string); isString {
-		result, err = strconv.ParseBool(optionString)
+		if optionString == "" {
+			result = defaultValue
+		} else {
+			result, err = strconv.ParseBool(optionString)
+		}
 	}
 	return result, err
 }
