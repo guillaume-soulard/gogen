@@ -19,12 +19,11 @@
 **** Options
 ***** pretty (true / false)
 ***** indent (true / false)
-*** JSON (already implemented and by default)
+*** JSON (implemented)
 **** Options
 ***** pretty (true / false)
-***** indent (true / false)
 * Custom output :
-** Stdout (by default)
+** Stdout (implemented)
 ** File(s)
 ** Postgresql
 ** Redis
