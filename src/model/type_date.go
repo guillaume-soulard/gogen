@@ -3,11 +3,10 @@ package model
 import (
 	"errors"
 	"fmt"
+	"github.com/ogama/gogen/src/constants"
 	"strings"
 	"time"
 )
-
-const dateFormat = "2006-01-02T15:04:05"
 
 type DateType struct {
 	min      time.Time
@@ -38,14 +37,14 @@ func (d DateTypeFactory) DefaultOptions() TypeOptions {
 
 func (d DateTypeFactory) New(parameters TypeFactoryParameter) (generator TypeGenerator, err error) {
 	var min, max time.Time
-	if min, err = time.ParseInLocation(dateFormat, parameters.Options.GetOptionAsString("bounds.min"), time.UTC); err != nil {
+	if min, err = time.ParseInLocation(constants.DateFormat, parameters.Options.GetOptionAsString("bounds.min"), time.UTC); err != nil {
 		return generator, err
 	}
-	if max, err = time.ParseInLocation(dateFormat, parameters.Options.GetOptionAsString("bounds.max"), time.UTC); err != nil {
+	if max, err = time.ParseInLocation(constants.DateFormat, parameters.Options.GetOptionAsString("bounds.max"), time.UTC); err != nil {
 		return generator, err
 	}
 	if min.After(max) {
-		return generator, errors.New(fmt.Sprintf("bounds.min = %s is greater than bounds.max = %s", min.Format(dateFormat), max.Format(dateFormat)))
+		return generator, errors.New(fmt.Sprintf("bounds.min = %s is greater than bounds.max = %s", min.Format(constants.DateFormat), max.Format(constants.DateFormat)))
 	}
 	return &DateType{
 		min:      min,

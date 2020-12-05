@@ -2,8 +2,8 @@ package stdout
 
 import (
 	"fmt"
-	"github.com/ogama/gogen/model/configuration"
-	commonOutput "github.com/ogama/gogen/model/output/common"
+	"github.com/ogama/gogen/src/configuration"
+	commonOutput "github.com/ogama/gogen/src/output/common"
 )
 
 type BuilderStdout struct{}

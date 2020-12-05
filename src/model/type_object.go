@@ -1,8 +1,9 @@
 package model
 
-import "sort"
-
-const ObjectFieldsTemplatesOptionName = "objectFieldsTemplates"
+import (
+	"github.com/ogama/gogen/src/constants"
+	"sort"
+)
 
 type ObjectType struct {
 	fieldTemplates []FieldModel
@@ -27,7 +28,7 @@ func (o ObjectTypeFactory) DefaultOptions() TypeOptions {
 }
 
 func (o ObjectTypeFactory) New(parameters TypeFactoryParameter) (generator TypeGenerator, err error) {
-	fields := parameters.Options[ObjectFieldsTemplatesOptionName].([]FieldModel)
+	fields := parameters.Options[constants.ObjectFieldsTemplatesOptionName].([]FieldModel)
 	sort.Slice(fields, func(i int, j int) bool {
 		return fields[i].FieldName < fields[j].FieldName
 	})

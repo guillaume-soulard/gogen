@@ -2,7 +2,7 @@ package model
 
 import (
 	"fmt"
-	"github.com/ogama/gogen/model/output"
+	"github.com/ogama/gogen/src/output"
 	"time"
 )
 

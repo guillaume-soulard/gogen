@@ -3,9 +3,8 @@ package model
 import (
 	"errors"
 	"fmt"
+	"github.com/ogama/gogen/src/constants"
 )
-
-const ArrayGeneratorOptionName = "itemGenerator"
 
 type ArrayType struct {
 	minBound      int
@@ -53,6 +52,6 @@ func (a ArrayTypeFactory) New(parameters TypeFactoryParameter) (generator TypeGe
 	return &ArrayType{
 		minBound:      min,
 		maxBound:      max,
-		itemGenerator: parameters.Options.GetOptionAsInterface(ArrayGeneratorOptionName).(ObjectModel),
+		itemGenerator: parameters.Options.GetOptionAsInterface(constants.ArrayGeneratorOptionName).(ObjectModel),
 	}, err
 }

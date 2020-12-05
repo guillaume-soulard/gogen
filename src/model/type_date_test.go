@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/ogama/gogen/model/configuration"
+	"github.com/ogama/gogen/src/configuration"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"

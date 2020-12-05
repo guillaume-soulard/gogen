@@ -2,8 +2,8 @@ package json
 
 import (
 	jsonEncode "encoding/json"
-	"github.com/ogama/gogen/model/configuration"
-	"github.com/ogama/gogen/model/format/common"
+	"github.com/ogama/gogen/src/configuration"
+	"github.com/ogama/gogen/src/format/common"
 )
 
 type BuilderJson struct{}

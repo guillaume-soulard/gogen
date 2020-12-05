@@ -1,6 +1,6 @@
 package common
 
-import "github.com/ogama/gogen/model/configuration"
+import "github.com/ogama/gogen/src/configuration"
 
 type Format interface {
 	Format(object interface{}) (result string, err error)

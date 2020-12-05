@@ -1,6 +1,8 @@
 package model
 
-import "errors"
+import (
+	"errors"
+)
 
 type PickerType struct {
 	items              []interface{}

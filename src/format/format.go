@@ -3,9 +3,9 @@ package format
 import (
 	"errors"
 	"fmt"
-	"github.com/ogama/gogen/model/configuration"
-	"github.com/ogama/gogen/model/format/common"
-	"github.com/ogama/gogen/model/format/json"
+	"github.com/ogama/gogen/src/configuration"
+	"github.com/ogama/gogen/src/format/common"
+	"github.com/ogama/gogen/src/format/json"
 )
 
 type StrategyFormat struct {

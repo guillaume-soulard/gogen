@@ -5,6 +5,7 @@ go 1.14
 require (
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/hashicorp/go-version v1.2.1 // indirect
+	github.com/kisielk/godepgraph v0.0.0-20190626013829-57a7e4a651a9 // indirect
 	github.com/labstack/gommon v0.3.0
 	github.com/mattn/go-colorable v0.1.7 // indirect
 	github.com/mitchellh/gox v1.0.1 // indirect

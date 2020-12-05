@@ -3,11 +3,11 @@ package output
 import (
 	"errors"
 	"fmt"
-	"github.com/ogama/gogen/model/configuration"
-	"github.com/ogama/gogen/model/format"
-	"github.com/ogama/gogen/model/format/common"
-	commonOutput "github.com/ogama/gogen/model/output/common"
-	"github.com/ogama/gogen/model/output/stdout"
+	"github.com/ogama/gogen/src/configuration"
+	"github.com/ogama/gogen/src/format"
+	"github.com/ogama/gogen/src/format/common"
+	commonOutput "github.com/ogama/gogen/src/output/common"
+	"github.com/ogama/gogen/src/output/stdout"
 )
 
 type FormatThenOutput struct {

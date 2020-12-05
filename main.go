@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/labstack/gommon/log"
-	. "github.com/ogama/gogen/model"
-	"github.com/ogama/gogen/model/configuration"
+	"github.com/ogama/gogen/src"
+	"github.com/ogama/gogen/src/configuration"
+	"github.com/ogama/gogen/src/model"
 	"io/ioutil"
 	"os"
 )
@@ -26,12 +27,12 @@ func ExecuteFile(fileName string) (err error) {
 		return err
 	}
 	setDefaultValueInConfiguration(&config)
-	var result Model
-	if result, err = GenerateModel(config); err != nil {
+	var result model.Model
+	if result, err = src.GenerateModel(config); err != nil {
 		return err
 	}
-	var context GeneratorContext
-	if context, err = NewGenerationContext(config); err != nil {
+	var context model.GeneratorContext
+	if context, err = model.NewGenerationContext(config); err != nil {
 		return err
 	}
 	return result.Generate(&context)

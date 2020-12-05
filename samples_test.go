@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/ogama/gogen/src"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"os"
@@ -13,7 +14,7 @@ func Test_samples(t *testing.T) {
 	assert.NoError(t, err)
 	for _, sample := range samples {
 		fmt.Println(sample)
-		assert.NoError(t, ExecuteFile("samples/"+sample), "Sample %s", sample)
+		assert.NoError(t, src.ExecuteFile("samples/"+sample), "Sample %s", sample)
 	}
 }
 

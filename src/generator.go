@@ -1,23 +1,25 @@
-package model
+package src
 
 import (
 	"errors"
 	"fmt"
-	"github.com/ogama/gogen/model/configuration"
+	"github.com/ogama/gogen/src/configuration"
+	"github.com/ogama/gogen/src/constants"
+	"github.com/ogama/gogen/src/model"
 	"strings"
 )
 
-func GenerateModel(configuration configuration.Configuration) (result Model, err error) {
-	var model ObjectModel
+func GenerateModel(configuration configuration.Configuration) (result model.Model, err error) {
+	var m model.ObjectModel
 	var aliases map[string]interface{}
 	if aliases, err = generateAliases(configuration); err != nil {
 		return result, err
 	}
 	configuration.TemplateConfiguration = replaceAliasesInTemplate(aliases, configuration.TemplateConfiguration)
-	if model, err = generateModel(configuration, "template", configuration.TemplateConfiguration); err != nil {
+	if m, err = generateModel(configuration, "template", configuration.TemplateConfiguration); err != nil {
 		return result, err
 	}
-	result.ObjectModel = model
+	result.ObjectModel = m
 	return result, err
 }
 
@@ -39,7 +41,7 @@ func replaceAliasesInTemplate(aliases map[string]interface{}, template interface
 
 func isTypeField(template interface{}) bool {
 	if objectMap, isMap := template.(map[string]interface{}); isMap {
-		for fieldName, _ := range objectMap {
+		for fieldName := range objectMap {
 			if fieldName == "_type" {
 				return true
 			}
@@ -72,23 +74,23 @@ func generateAliases(configuration configuration.Configuration) (aliases map[str
 	return aliases, err
 }
 
-func generateModel(configuration configuration.Configuration, fieldName string, template interface{}) (result ObjectModel, err error) {
+func generateModel(configuration configuration.Configuration, fieldName string, template interface{}) (result model.ObjectModel, err error) {
 	fieldType := getFieldType(template)
-	if typeFactory, exists := TypeFactories.GetFactory(fieldType); exists {
-		var options TypeOptions
+	if typeFactory, exists := model.TypeFactories.GetFactory(fieldType); exists {
+		var options model.TypeOptions
 		if options, err = getOptions(fieldType, template, configuration); err != nil {
 			return result, err
 		}
 		options = typeFactory.DefaultOptions().OverloadWith(options)
-		var value TypeGenerator
-		if value, err = typeFactory.New(TypeFactoryParameter{
+		var value model.TypeGenerator
+		if value, err = typeFactory.New(model.TypeFactoryParameter{
 			Configuration: configuration,
 			Template:      template,
 			Options:       options,
 		}); err != nil {
 			return result, err
 		}
-		result.Fields = append(result.Fields, FieldModel{
+		result.Fields = append(result.Fields, model.FieldModel{
 			FieldName: fieldName,
 			Value:     value,
 		})
@@ -98,7 +100,7 @@ func generateModel(configuration configuration.Configuration, fieldName string, 
 	return result, err
 }
 
-func getOptions(fieldType string, template interface{}, configuration configuration.Configuration) (options TypeOptions, err error) {
+func getOptions(fieldType string, template interface{}, configuration configuration.Configuration) (options model.TypeOptions, err error) {
 	options = make(map[string]interface{})
 	if fieldType == "object" {
 		if err = objectSpecificGeneration(options, template, configuration); err != nil {
@@ -106,7 +108,7 @@ func getOptions(fieldType string, template interface{}, configuration configurat
 		}
 	} else if fieldType == "array" {
 		options = getOptionField(template)
-		if options[ArrayGeneratorOptionName], err = generateModel(configuration, "itemTemplate", options["itemTemplate"]); err != nil {
+		if options[constants.ArrayGeneratorOptionName], err = generateModel(configuration, "itemTemplate", options["itemTemplate"]); err != nil {
 			return options, err
 		}
 	} else {
@@ -115,25 +117,25 @@ func getOptions(fieldType string, template interface{}, configuration configurat
 	return options, err
 }
 
-func objectSpecificGeneration(options TypeOptions, template interface{}, configuration configuration.Configuration) (err error) {
-	var objectFieldsTemplates []FieldModel
+func objectSpecificGeneration(options model.TypeOptions, template interface{}, configuration configuration.Configuration) (err error) {
+	var objectFieldsTemplates []model.FieldModel
 	for fieldName, fieldValue := range template.(map[string]interface{}) {
-		var objectTemplate ObjectModel
+		var objectTemplate model.ObjectModel
 		if objectTemplate, err = generateModel(configuration, fieldName, fieldValue); err != nil {
 			return err
 		}
 		objectFieldsTemplates = append(objectFieldsTemplates, objectTemplate.Fields...)
 	}
-	options[ObjectFieldsTemplatesOptionName] = objectFieldsTemplates
+	options[constants.ObjectFieldsTemplatesOptionName] = objectFieldsTemplates
 	return err
 }
 
-func getOptionField(template interface{}) (result TypeOptions) {
+func getOptionField(template interface{}) (result model.TypeOptions) {
 	if fields, isMap := template.(map[string]interface{}); isMap {
 		for fieldName, fieldValue := range fields {
 			if strings.ToLower(fieldName) == "options" {
 				if options, isOptionMap := fieldValue.(map[string]interface{}); isOptionMap {
-					return BuildTypeOption(options)
+					return model.BuildTypeOption(options)
 				}
 			}
 		}
