@@ -57,6 +57,16 @@ func (o Options) GetBoolOrDefault(option string, defaultValue bool) (result bool
 	return result, err
 }
 
+func (o Options) GetStringOfDefault(option string, defaultValue string) (result string, err error) {
+	optionValue := o.Get(option)
+	if optionValueString, isString := optionValue.(string); isString && optionValueString != "" {
+		result = optionValueString
+	} else {
+		result = defaultValue
+	}
+	return result, err
+}
+
 func (o Options) Get(option string) (result interface{}) {
 	result = ""
 	pathElement := strings.Split(option, ".")

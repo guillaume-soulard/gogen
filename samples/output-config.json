@@ -42,7 +42,7 @@
       "format": {
         "type": "xml",
         "options": {
-          "pretty": false
+          "pretty": true
         }
       }
     }
