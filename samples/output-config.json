@@ -40,7 +40,7 @@
     {
       "type": "stdout",
       "format": {
-        "type": "json",
+        "type": "xml",
         "options": {
           "pretty": false
         }

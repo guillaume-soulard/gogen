@@ -6,6 +6,7 @@ import (
 	"github.com/ogama/gogen/src/configuration"
 	"github.com/ogama/gogen/src/format/common"
 	"github.com/ogama/gogen/src/format/json"
+	"github.com/ogama/gogen/src/format/xml"
 )
 
 type StrategyFormat struct {
@@ -37,6 +38,7 @@ func (s StrategyFormat) GetDefaultFormat() common.Format {
 var Formats = StrategyFormat{
 	formats: map[string]common.Builder{
 		"json": json.BuilderJson{},
+		"xml":  xml.BuilderXml{},
 	},
 	defaultFormat: json.BuilderJson{},
 }
