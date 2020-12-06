@@ -3,6 +3,7 @@ module github.com/ogama/gogen
 go 1.14
 
 require (
+	github.com/akamensky/argparse v1.2.2
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/hashicorp/go-version v1.2.1 // indirect
 	github.com/kisielk/godepgraph v0.0.0-20190626013829-57a7e4a651a9 // indirect

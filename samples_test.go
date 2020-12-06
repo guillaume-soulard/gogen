@@ -14,7 +14,9 @@ func Test_samples(t *testing.T) {
 	assert.NoError(t, err)
 	for _, sample := range samples {
 		fmt.Println(sample)
-		assert.NoError(t, src.ExecuteFile("samples/"+sample), "Sample %s", sample)
+		file, err := os.Open(fmt.Sprintf("samples/%s", sample))
+		assert.NoError(t, err)
+		assert.NoError(t, src.ExecuteFile(file), "Sample %s", sample)
 	}
 }
 
