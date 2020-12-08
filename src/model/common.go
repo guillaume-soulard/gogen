@@ -7,9 +7,12 @@ import (
 	"time"
 )
 
+type GeneratedValuesByType map[string]interface{}
+
 type GeneratorContext struct {
-	Config configuration.Configuration
-	Rand   *rand.Rand
+	Config                configuration.Configuration
+	Rand                  *rand.Rand
+	GeneratedValuesByType GeneratedValuesByType
 }
 
 func (gc GeneratorContext) GenerateIntegerBetween(min int, max int) int {

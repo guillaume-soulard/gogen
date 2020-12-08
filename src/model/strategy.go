@@ -36,4 +36,5 @@ type TypeFactoryParameter struct {
 
 type TypeGenerator interface {
 	Generate(context *GeneratorContext) (result interface{}, err error)
+	GetName() string
 }

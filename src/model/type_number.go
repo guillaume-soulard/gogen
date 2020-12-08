@@ -14,6 +14,7 @@ type NumberType struct {
 	sequenceCycle     bool
 	sequenceIncrement float64
 	currentSequence   float64
+	name              string
 }
 
 func (n *NumberType) Generate(context *GeneratorContext) (result interface{}, err error) {
@@ -32,6 +33,10 @@ func (n *NumberType) Generate(context *GeneratorContext) (result interface{}, er
 		value := float64(int(randomNumber*p)) / p
 		return value, err
 	}
+}
+
+func (n *NumberType) GetName() string {
+	return n.name
 }
 
 type NumberTypeFactory struct{}
@@ -61,5 +66,6 @@ func (n NumberTypeFactory) New(parameters TypeFactoryParameter) (generator TypeG
 		sequenceCycle:     parameters.Options.GetOptionAsBool("sequence.cycle"),
 		sequenceIncrement: parameters.Options.GetOptionAsFloat("sequence.increment"),
 		currentSequence:   min,
+		name:              parameters.Options.GetOptionAsString("name"),
 	}, err
 }

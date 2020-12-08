@@ -6,5 +6,10 @@ type FieldModel struct {
 }
 
 func (fieldTemplate FieldModel) Generate(context *GeneratorContext) (result interface{}, err error) {
-	return fieldTemplate.Value.Generate(context)
+	result, err = fieldTemplate.Value.Generate(context)
+	name := fieldTemplate.Value.GetName()
+	if name != "" {
+		context.GeneratedValuesByType[name] = result
+	}
+	return result, err
 }
