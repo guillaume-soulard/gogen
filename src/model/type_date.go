@@ -12,9 +12,10 @@ type DateType struct {
 	min      time.Time
 	max      time.Time
 	truncate string
+	name     string
 }
 
-func (d *DateType) Generate(context *GeneratorContext) (result interface{}, err error) {
+func (d *DateType) Generate(context *GeneratorContext, _ GenerationRequest) (result interface{}, err error) {
 	date := time.Unix(context.GenerateInteger64Between(d.min.Unix(), d.max.Unix()), 0).In(time.UTC)
 	var duration time.Duration
 	if duration, err = getDurationFrom(d.truncate); err != nil {
@@ -25,6 +26,10 @@ func (d *DateType) Generate(context *GeneratorContext) (result interface{}, err 
 	return date, err
 }
 
+func (d *DateType) GetName() string {
+	return ""
+}
+
 type DateTypeFactory struct{}
 
 func (d DateTypeFactory) DefaultOptions() TypeOptions {
@@ -32,6 +37,7 @@ func (d DateTypeFactory) DefaultOptions() TypeOptions {
 	defaultOptions.Add("bounds.min", "1970-01-01T00:00:00")
 	defaultOptions.Add("bounds.max", "2099-12-31T23:59:59")
 	defaultOptions.Add("truncate", "milliseconds")
+	defaultOptions.Add("name", "")
 	return defaultOptions
 }
 
@@ -50,6 +56,7 @@ func (d DateTypeFactory) New(parameters TypeFactoryParameter) (generator TypeGen
 		min:      min,
 		max:      max,
 		truncate: parameters.Options.GetOptionAsString("truncate"),
+		name:     parameters.Options.GetOptionAsString("name"),
 	}, err
 }
 

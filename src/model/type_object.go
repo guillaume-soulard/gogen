@@ -9,16 +9,20 @@ type ObjectType struct {
 	fieldTemplates []FieldModel
 }
 
-func (o *ObjectType) Generate(context *GeneratorContext) (result interface{}, err error) {
+func (o *ObjectType) Generate(context *GeneratorContext, request GenerationRequest) (result interface{}, err error) {
 	generatedObject := make(map[string]interface{})
 	for _, template := range o.fieldTemplates {
 		var generated interface{}
-		if generated, err = template.Generate(context); err != nil {
+		if generated, err = template.Generate(context, request); err != nil {
 			return result, err
 		}
 		generatedObject[template.FieldName] = generated
 	}
 	return generatedObject, err
+}
+
+func (o *ObjectType) GetName() string {
+	return ""
 }
 
 type ObjectTypeFactory struct{}

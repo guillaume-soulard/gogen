@@ -17,7 +17,7 @@ type NumberType struct {
 	name              string
 }
 
-func (n *NumberType) Generate(context *GeneratorContext) (result interface{}, err error) {
+func (n *NumberType) Generate(context *GeneratorContext, _ GenerationRequest) (result interface{}, err error) {
 	if n.sequenceEnable {
 		if !n.sequenceCycle && n.currentSequence > n.maxBound {
 			return result, errors.New(fmt.Sprintf("sequence reach the maximum value of %f set sequence.cycle to true to allow sequence to restart from bounds.min", n.maxBound))
@@ -49,6 +49,7 @@ func (n NumberTypeFactory) DefaultOptions() TypeOptions {
 	defaultOptions.Add("sequence.enable", false)
 	defaultOptions.Add("sequence.cycle", true)
 	defaultOptions.Add("sequence.increment", 1)
+	defaultOptions.Add("name", "")
 	return defaultOptions
 }
 

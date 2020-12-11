@@ -19,7 +19,7 @@ func (m Model) Generate(context *GeneratorContext) (err error) {
 	}
 	for i := 1; i <= context.Config.Options.Amount; i++ {
 		var generatedObject interface{}
-		if generatedObject, err = m.ObjectModel.Generate(context); err != nil {
+		if generatedObject, err = m.ObjectModel.Generate(context, Generate); err != nil {
 			return err
 		}
 		if objectMap, isMap := generatedObject.(map[string]interface{}); isMap {

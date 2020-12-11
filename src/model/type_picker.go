@@ -8,6 +8,7 @@ type PickerType struct {
 	items              []interface{}
 	probabilisticItems []ProbabilisticItem
 	probabilistic      bool
+	name               string
 }
 
 type ProbabilisticItem struct {
@@ -16,7 +17,7 @@ type ProbabilisticItem struct {
 	max   float64
 }
 
-func (p *PickerType) Generate(context *GeneratorContext) (result interface{}, err error) {
+func (p *PickerType) Generate(context *GeneratorContext, _ GenerationRequest) (result interface{}, err error) {
 	if p.probabilistic {
 		var object interface{}
 		random := context.GenerateFloatBetween(1, 100)
@@ -33,11 +34,16 @@ func (p *PickerType) Generate(context *GeneratorContext) (result interface{}, er
 	}
 }
 
+func (p *PickerType) GetName() string {
+	return p.name
+}
+
 type PickerTypeFactory struct{}
 
 func (p PickerTypeFactory) DefaultOptions() TypeOptions {
 	defaultOptions := TypeOptions{}
 	defaultOptions.Add("items", nil)
+	defaultOptions.Add("name", "")
 	return defaultOptions
 }
 
@@ -66,6 +72,7 @@ func (p PickerTypeFactory) New(parameters TypeFactoryParameter) (generator TypeG
 		items:              items,
 		probabilisticItems: probabilisticItems,
 		probabilistic:      isProbabilistic,
+		name:               parameters.Options.GetOptionAsString("name"),
 	}, err
 }
 

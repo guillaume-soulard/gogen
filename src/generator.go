@@ -9,14 +9,14 @@ import (
 	"strings"
 )
 
-func GenerateModel(configuration configuration.Configuration) (result model.Model, err error) {
+func GenerateModel(configuration configuration.Configuration, refs *model.Refs) (result model.Model, err error) {
 	var m model.ObjectModel
 	var aliases map[string]interface{}
 	if aliases, err = generateAliases(configuration); err != nil {
 		return result, err
 	}
 	configuration.TemplateConfiguration = replaceAliasesInTemplate(aliases, configuration.TemplateConfiguration)
-	if m, err = generateModel(configuration, "template", configuration.TemplateConfiguration); err != nil {
+	if m, err = generateModel(configuration, "template", configuration.TemplateConfiguration, refs); err != nil {
 		return result, err
 	}
 	result.ObjectModel = m
@@ -74,15 +74,16 @@ func generateAliases(configuration configuration.Configuration) (aliases map[str
 	return aliases, err
 }
 
-func generateModel(configuration configuration.Configuration, fieldName string, template interface{}) (result model.ObjectModel, err error) {
+func generateModel(configuration configuration.Configuration, fieldName string, template interface{}, refs *model.Refs) (result model.ObjectModel, err error) {
 	fieldType := getFieldType(template)
 	if typeFactory, exists := model.TypeFactories.GetFactory(fieldType); exists {
 		var options model.TypeOptions
-		if options, err = getOptions(fieldType, template, configuration); err != nil {
+		if options, err = getOptions(fieldType, template, configuration, refs); err != nil {
 			return result, err
 		}
 		options = typeFactory.DefaultOptions().OverloadWith(options)
 		var value model.TypeGenerator
+		isRef := strings.ToLower(fieldType) == "ref"
 		if value, err = typeFactory.New(model.TypeFactoryParameter{
 			Configuration: configuration,
 			Template:      template,
@@ -90,25 +91,32 @@ func generateModel(configuration configuration.Configuration, fieldName string, 
 		}); err != nil {
 			return result, err
 		}
-		result.Fields = append(result.Fields, model.FieldModel{
+		value = model.AbstractTypeGenerator{TypeGenerator: value, IsRef: isRef}
+		fieldModel := model.FieldModel{
 			FieldName: fieldName,
 			Value:     value,
-		})
+		}
+		if fieldModel.Value.GetName() != "" {
+			if err = refs.PutRef(fieldModel.Value.GetName(), &fieldModel.Value); err != nil {
+				return result, err
+			}
+		}
+		result.Fields = append(result.Fields, fieldModel)
 	} else {
 		return result, errors.New(fmt.Sprintf("Unsupported type %s", fieldType))
 	}
 	return result, err
 }
 
-func getOptions(fieldType string, template interface{}, configuration configuration.Configuration) (options model.TypeOptions, err error) {
+func getOptions(fieldType string, template interface{}, configuration configuration.Configuration, refs *model.Refs) (options model.TypeOptions, err error) {
 	options = make(map[string]interface{})
 	if fieldType == "object" {
-		if err = objectSpecificGeneration(options, template, configuration); err != nil {
+		if err = objectSpecificGeneration(options, template, configuration, refs); err != nil {
 			return options, err
 		}
 	} else if fieldType == "array" {
 		options = getOptionField(template)
-		if options[constants.ArrayGeneratorOptionName], err = generateModel(configuration, "itemTemplate", options["itemTemplate"]); err != nil {
+		if options[constants.ArrayGeneratorOptionName], err = generateModel(configuration, "itemTemplate", options["itemTemplate"], refs); err != nil {
 			return options, err
 		}
 	} else {
@@ -117,11 +125,11 @@ func getOptions(fieldType string, template interface{}, configuration configurat
 	return options, err
 }
 
-func objectSpecificGeneration(options model.TypeOptions, template interface{}, configuration configuration.Configuration) (err error) {
+func objectSpecificGeneration(options model.TypeOptions, template interface{}, configuration configuration.Configuration, refs *model.Refs) (err error) {
 	var objectFieldsTemplates []model.FieldModel
 	for fieldName, fieldValue := range template.(map[string]interface{}) {
 		var objectTemplate model.ObjectModel
-		if objectTemplate, err = generateModel(configuration, fieldName, fieldValue); err != nil {
+		if objectTemplate, err = generateModel(configuration, fieldName, fieldValue, refs); err != nil {
 			return err
 		}
 		objectFieldsTemplates = append(objectFieldsTemplates, objectTemplate.Fields...)

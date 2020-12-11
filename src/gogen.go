@@ -15,13 +15,15 @@ func ExecuteFile(file *os.File) (err error) {
 	}
 	setDefaultValueInConfiguration(&config)
 	var result model.Model
-	if result, err = GenerateModel(config); err != nil {
+	refs := model.Refs{}
+	if result, err = GenerateModel(config, &refs); err != nil {
 		return err
 	}
 	var context model.GeneratorContext
 	if context, err = model.NewGenerationContext(config); err != nil {
 		return err
 	}
+	context.Refs = refs
 	return result.Generate(&context)
 }
 

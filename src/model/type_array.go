@@ -13,12 +13,12 @@ type ArrayType struct {
 	itemGenerator ObjectModel
 }
 
-func (a *ArrayType) Generate(context *GeneratorContext) (result interface{}, err error) {
+func (a *ArrayType) Generate(context *GeneratorContext, request GenerationRequest) (result interface{}, err error) {
 	numberOfItemsToGenerate := context.GenerateIntegerBetween(a.minBound, a.maxBound)
 	array := make([]interface{}, numberOfItemsToGenerate)
 	for i := 0; i < numberOfItemsToGenerate; i++ {
 		var generatedItem interface{}
-		if generatedItem, err = a.itemGenerator.Generate(context); err != nil {
+		if generatedItem, err = a.itemGenerator.Generate(context, request); err != nil {
 			return result, err
 		}
 		if objectMap, isMap := generatedItem.(map[string]interface{}); isMap {
@@ -27,6 +27,10 @@ func (a *ArrayType) Generate(context *GeneratorContext) (result interface{}, err
 		array[i] = generatedItem
 	}
 	return array, err
+}
+
+func (a *ArrayType) GetName() string {
+	return ""
 }
 
 type ArrayTypeFactory struct{}

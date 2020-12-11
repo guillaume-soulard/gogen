@@ -1,18 +1,45 @@
 package model
 
 import (
+	"errors"
+	"fmt"
 	"github.com/ogama/gogen/src/configuration"
 	"hash/fnv"
 	"math/rand"
 	"time"
 )
 
-type GeneratedValuesByType map[string]interface{}
+type Refs struct {
+	ref map[string]*TypeGenerator
+}
+
+func (r *Refs) PutRef(name string, generator *TypeGenerator) (err error) {
+	if r.ref == nil {
+		r.ref = make(map[string]*TypeGenerator)
+	}
+	if _, exists := r.ref[name]; exists {
+		err = errors.New(fmt.Sprintf("ref name %s already exists", name))
+	} else {
+		r.ref[name] = generator
+	}
+	return err
+}
+
+func (r *Refs) GetRefValue(name string, context *GeneratorContext) (value interface{}, err error) {
+	var exists bool
+	var generator *TypeGenerator
+	if generator, exists = r.ref[name]; !exists {
+		err = errors.New(fmt.Sprintf("no values for ref name %s", name))
+	} else {
+		value, err = (*generator).Generate(context, Ref)
+	}
+	return value, err
+}
 
 type GeneratorContext struct {
-	Config                configuration.Configuration
-	Rand                  *rand.Rand
-	GeneratedValuesByType GeneratedValuesByType
+	Config configuration.Configuration
+	Rand   *rand.Rand
+	Refs   Refs
 }
 
 func (gc GeneratorContext) GenerateIntegerBetween(min int, max int) int {
