@@ -55,17 +55,17 @@ type csvConfig struct {
 	valuePath  []string
 }
 
-func (f FormatCsv) Format(object interface{}) (result string, err error) {
+func (f FormatCsv) Format(generatedObject common.GeneratedObject) (result string, err error) {
 	if f.config == nil {
 		f.config = []csvConfig{}
-		getCsvConfigFrom(object, &f, []string{})
+		getCsvConfigFrom(generatedObject.Object, &f, []string{})
 		filterAndOrderColumns(&f)
 	}
 	result = ""
 	if f.headers {
 		result = fmt.Sprintln(f.doFormatHeader())
 	}
-	result = fmt.Sprintf("%s%s", result, f.doFormatCsv(object))
+	result = fmt.Sprintf("%s%s", result, f.doFormatCsv(generatedObject.Object))
 	return result, err
 }
 

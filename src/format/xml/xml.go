@@ -28,15 +28,15 @@ type FormatXml struct {
 	objectRootName string
 }
 
-func (f FormatXml) Format(object interface{}) (result string, err error) {
+func (f FormatXml) Format(generatedObject common.GeneratedObject) (result string, err error) {
 	var marshalResult []byte
-	if err = formatTimeRecursively(&object); err != nil {
+	if err = formatTimeRecursively(&generatedObject.Object); err != nil {
 		return result, err
 	}
 	if f.pretty {
-		marshalResult, err = anyxml.XmlIndent(object, "", "  ", f.objectRootName)
+		marshalResult, err = anyxml.XmlIndent(generatedObject.Object, "", "  ", f.objectRootName)
 	} else {
-		marshalResult, err = anyxml.Xml(object, f.objectRootName)
+		marshalResult, err = anyxml.Xml(generatedObject.Object, f.objectRootName)
 	}
 	result = string(marshalResult)
 	return result, err

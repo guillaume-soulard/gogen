@@ -19,12 +19,12 @@ type FormatJson struct {
 	pretty bool
 }
 
-func (f FormatJson) Format(object interface{}) (result string, err error) {
+func (f FormatJson) Format(generatedObject common.GeneratedObject) (result string, err error) {
 	var marshalResult []byte
 	if f.pretty {
-		marshalResult, err = jsonEncode.MarshalIndent(object, "", "  ")
+		marshalResult, err = jsonEncode.MarshalIndent(generatedObject.Object, "", "  ")
 	} else {
-		marshalResult, err = jsonEncode.Marshal(object)
+		marshalResult, err = jsonEncode.Marshal(generatedObject.Object)
 	}
 	result = string(marshalResult)
 	return result, err
