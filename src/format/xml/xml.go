@@ -15,7 +15,7 @@ func (b BuilderXml) Build(configuration configuration.FormatConfiguration) (resu
 		return result, err
 	}
 	var objectRootName string
-	objectRootName, err = configuration.Options.GetStringOfDefault("objectRootName", "object")
+	objectRootName, err = configuration.Options.GetStringOrDefault("objectRootName", "object")
 	result = FormatXml{
 		pretty:         pretty,
 		objectRootName: objectRootName,

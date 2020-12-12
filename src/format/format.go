@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ogama/gogen/src/configuration"
 	"github.com/ogama/gogen/src/format/common"
+	"github.com/ogama/gogen/src/format/csv"
 	"github.com/ogama/gogen/src/format/json"
 	"github.com/ogama/gogen/src/format/xml"
 )
@@ -39,6 +40,7 @@ var Formats = StrategyFormat{
 	formats: map[string]common.Builder{
 		"json": json.BuilderJson{},
 		"xml":  xml.BuilderXml{},
+		"csv":  csv.BuilderCsv{},
 	},
 	defaultFormat: json.BuilderJson{},
 }

@@ -34,15 +34,22 @@
         },
         "truncate": "hours"
       }
+    },
+    "static": {
+      "field": {
+        "subField": "test",
+        "subField1": 12
+      }
     }
   },
   "outputs": [
     {
       "type": "stdout",
       "format": {
-        "type": "xml",
+        "type": "csv",
         "options": {
-          "pretty": true
+          "separator": ";",
+          "columns": "id,firstName"
         }
       }
     }
