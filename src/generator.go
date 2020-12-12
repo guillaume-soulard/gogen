@@ -91,13 +91,13 @@ func generateModel(configuration configuration.Configuration, fieldName string, 
 		}); err != nil {
 			return result, err
 		}
-		value = model.AbstractTypeGenerator{TypeGenerator: value, IsRef: isRef}
+		value = &model.AbstractTypeGenerator{TypeGenerator: value, IsRef: isRef}
 		fieldModel := model.FieldModel{
 			FieldName: fieldName,
 			Value:     value,
 		}
 		if fieldModel.Value.GetName() != "" {
-			if err = refs.PutRef(fieldModel.Value.GetName(), &fieldModel.Value); err != nil {
+			if err = refs.PutRef(fieldModel.Value.GetName(), &value); err != nil {
 				return result, err
 			}
 		}
