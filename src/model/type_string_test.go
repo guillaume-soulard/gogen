@@ -14,7 +14,7 @@ func Test_Generate_should_generate_single_character_string_generation(t *testing
 		stringGenerator: generator,
 	}
 	// WHEN
-	result, _ := stringType.Generate(&GeneratorContext{})
+	result, _ := stringType.Generate(&GeneratorContext{}, Generate)
 	// THEN
 	assert.Equal(t, "a", result)
 }
@@ -26,7 +26,7 @@ func Test_Generate_should_generate_empty_string_when_pattern_is_empty(t *testing
 		stringGenerator: generator,
 	}
 	// WHEN
-	result, _ := stringType.Generate(&GeneratorContext{})
+	result, _ := stringType.Generate(&GeneratorContext{}, Generate)
 	// THEN
 	assert.Equal(t, "", result)
 }
@@ -38,7 +38,7 @@ func Test_Generate_should_generate_string_with_length_10(t *testing.T) {
 		stringGenerator: generator,
 	}
 	// WHEN
-	result, _ := stringType.Generate(&GeneratorContext{})
+	result, _ := stringType.Generate(&GeneratorContext{}, Generate)
 	// THEN
 	assert.Len(t, result, 10)
 }
@@ -50,7 +50,7 @@ func Test_Generate_should_generate_string_with_length_10_and_full_of_a(t *testin
 		stringGenerator: generator,
 	}
 	// WHEN
-	result, _ := stringType.Generate(&GeneratorContext{})
+	result, _ := stringType.Generate(&GeneratorContext{}, Generate)
 	// THEN
 	assert.Equal(t, "aaaaaaaaaa", result)
 }

@@ -12,7 +12,7 @@ func Test_Generate_should_generate_a_float_number(t *testing.T) {
 	context, err := NewGenerationContext(configuration.Configuration{})
 	assert.NoError(t, err)
 	// WHEN
-	result, _ := generator.Generate(&context)
+	result, _ := generator.Generate(&context, Generate)
 	// THEN
 	assert.IsType(t, float64(0), result)
 }
@@ -26,7 +26,7 @@ func Test_Generate_should_generate_0(t *testing.T) {
 	context, err := NewGenerationContext(configuration.Configuration{})
 	assert.NoError(t, err)
 	// WHEN
-	result, _ := generator.Generate(&context)
+	result, _ := generator.Generate(&context, Generate)
 	// THEN
 	assert.Equal(t, float64(0), result)
 }
@@ -40,7 +40,7 @@ func Test_Generate_should_generate_1(t *testing.T) {
 	context, err := NewGenerationContext(configuration.Configuration{})
 	assert.NoError(t, err)
 	// WHEN
-	result, _ := generator.Generate(&context)
+	result, _ := generator.Generate(&context, Generate)
 	// THEN
 	assert.Equal(t, float64(1), result)
 }
@@ -55,7 +55,7 @@ func Test_Generate_should_generate_1_dot_1(t *testing.T) {
 	context, err := NewGenerationContext(configuration.Configuration{})
 	assert.NoError(t, err)
 	// WHEN
-	result, _ := generator.Generate(&context)
+	result, _ := generator.Generate(&context, Generate)
 	// THEN
 	assert.Equal(t, 1.1, result)
 }
@@ -70,7 +70,7 @@ func Test_Generate_should_generate_1_dot_111(t *testing.T) {
 	context, err := NewGenerationContext(configuration.Configuration{})
 	assert.NoError(t, err)
 	// WHEN
-	result, _ := generator.Generate(&context)
+	result, _ := generator.Generate(&context, Generate)
 
 	// THEN
 	assert.Equal(t, 1.111, result)
@@ -85,7 +85,7 @@ func Test_Generate_should_generate_minus_1(t *testing.T) {
 	context, err := NewGenerationContext(configuration.Configuration{})
 	assert.NoError(t, err)
 	// WHEN
-	result, _ := generator.Generate(&context)
+	result, _ := generator.Generate(&context, Generate)
 
 	// THEN
 	assert.Equal(t, float64(-1), result)
@@ -100,7 +100,7 @@ func Test_Generate_should_generate_number_between_1_and_10(t *testing.T) {
 	context, err := NewGenerationContext(configuration.Configuration{})
 	assert.NoError(t, err)
 	// WHEN
-	result, _ := generator.Generate(&context)
+	result, _ := generator.Generate(&context, Generate)
 
 	// THEN
 	assert.Contains(t, []float64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, result)
@@ -120,7 +120,7 @@ func Test_Generate_should_generate_number_trough_1_to_10_in_order(t *testing.T) 
 	assert.NoError(t, err)
 	for i := 1; i <= 10; i++ {
 		// WHEN
-		result, _ := generator.Generate(&context)
+		result, _ := generator.Generate(&context, Generate)
 		// THEN
 		assert.Equal(t, float64(i), result)
 	}
@@ -143,7 +143,7 @@ func Test_Generate_should_generate_number_trough_1_to_5_in_order_twice(t *testin
 	assert.NoError(t, err)
 	result := make([]float64, 0)
 	for i := 1; i <= 10; i++ {
-		generated, _ := generator.Generate(&context)
+		generated, _ := generator.Generate(&context, Generate)
 		result = append(result, generated.(float64))
 	}
 

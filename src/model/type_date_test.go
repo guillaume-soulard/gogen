@@ -27,7 +27,7 @@ func Test_Generate_should_generate_a_type_date(t *testing.T) {
 	context, err := NewGenerationContext(configuration.Configuration{})
 	assert.NoError(t, err)
 	// WHEN
-	result, _ := generator.Generate(&context)
+	result, _ := generator.Generate(&context, Generate)
 	// THEN
 	assert.IsType(t, time.Time{}, result)
 }
@@ -45,7 +45,7 @@ func Test_Generate_should_generate_a_date(t *testing.T) {
 	context, err := NewGenerationContext(configuration.Configuration{})
 	assert.NoError(t, err)
 	// WHEN
-	result, _ := generator.Generate(&context)
+	result, _ := generator.Generate(&context, Generate)
 	// THEN
 	assert.Equal(t, time.Date(2020, time.June, 11, 14, 32, 24, 0, time.UTC), result)
 }

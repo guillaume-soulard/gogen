@@ -27,7 +27,11 @@ func getOptionsRecursively(json map[string]interface{}, parentPath []string, opt
 }
 
 func (to TypeOptions) GetOptionAsString(optionPath string) string {
-	return to[optionPath].(string)
+	if value, exists := to[optionPath]; exists {
+		return value.(string)
+	} else {
+		return ""
+	}
 }
 
 func (to TypeOptions) GetOptionAsInt(optionPath string) int {
