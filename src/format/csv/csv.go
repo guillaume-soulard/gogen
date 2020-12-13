@@ -1,6 +1,7 @@
 package csv
 
 import (
+	"errors"
 	"fmt"
 	"github.com/ogama/gogen/src/configuration"
 	"github.com/ogama/gogen/src/format/common"
@@ -65,20 +66,32 @@ func (f FormatCsv) Format(generatedObject common.GeneratedObject) (result string
 	if f.headers {
 		result = fmt.Sprintln(f.doFormatHeader())
 	}
-	result = fmt.Sprintf("%s%s", result, f.doFormatCsv(generatedObject.Object))
+	var line string
+	if line, err = f.doFormatCsv(generatedObject); err != nil {
+		return result, err
+	}
+	result = fmt.Sprintf("%s%s", result, line)
 	return result, err
 }
 
-func (f FormatCsv) doFormatCsv(object interface{}) (result string) {
+func (f FormatCsv) doFormatCsv(generatedObject common.GeneratedObject) (result string, err error) {
 	temp := make([]string, len(f.config))
 	for i, fieldConfig := range f.config {
-		temp[i] = fmt.Sprintf("%v", getValue(object, fieldConfig))
+		if value, exists := generatedObject.GetValue(fieldConfig.valuePath); exists {
+			temp[i] = fmt.Sprintf("%v", value)
+		} else {
+			err = errors.New(fmt.Sprintf("field %s not found", strings.Join(fieldConfig.valuePath, ".")))
+			return result, err
+		}
 	}
-	return result
+	return result, err
 }
 
-func getValue(object interface{}, config csvConfig) interface{} {
-
+func (f FormatCsv) doFormatHeader() (result string) {
+	for _, c := range f.config {
+		result = fmt.Sprintf("%s%s%s", result, f.separator, c)
+	}
+	return result
 }
 
 func getCsvConfigFrom(object interface{}, f *FormatCsv, path []string) {

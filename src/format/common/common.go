@@ -2,28 +2,29 @@ package common
 
 import (
 	"github.com/ogama/gogen/src/configuration"
-	"strings"
 )
 
 type GeneratedObject struct {
 	Object interface{}
 }
 
-func (g GeneratedObject) GetValue(path string) (result interface{}, exists bool) {
-	result, exists = g.getValuePathArray(strings.Split(path, "."))
+func (g GeneratedObject) GetValue(path []string) (result interface{}, exists bool) {
+	result, exists = getValue(g.Object, path)
 	return result, exists
 }
 
-func (g GeneratedObject) getValuePathArray(pathArray []string) (result interface{}, exists bool) {
-	if len(pathArray) > 0 {
-		field := pathArray[0]
-		if mapValue, isMap := g.Object.(map[string]interface{}); isMap {
+func getValue(object interface{}, path []string) (result interface{}, exists bool) {
+	exists = false
+	pathLen := len(path)
+	if pathLen > 0 {
+		field := path[0]
+		if mapValue, isMap := object.(map[string]interface{}); isMap {
 			if result, exists = mapValue[field]; exists {
-
+				if pathLen > 1 {
+					result, exists = getValue(object, path[1:])
+				}
 			}
 		}
-	} else {
-		exists = false
 	}
 	return result, exists
 }
