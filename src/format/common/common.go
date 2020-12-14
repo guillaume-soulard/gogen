@@ -21,7 +21,8 @@ func getValue(object interface{}, path []string) (result interface{}, exists boo
 		if mapValue, isMap := object.(map[string]interface{}); isMap {
 			if result, exists = mapValue[field]; exists {
 				if pathLen > 1 {
-					result, exists = getValue(object, path[1:])
+					newPath := path[1:]
+					result, exists = getValue(result, newPath)
 				}
 			}
 		}

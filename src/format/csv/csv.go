@@ -10,15 +10,32 @@ import (
 
 type BuilderCsv struct{}
 
+const (
+	quoteBehaviourNever   = "never"
+	quoteBehaviourAlways  = "always"
+	quoteBehaviourStrings = "strings"
+)
+
 func (b BuilderCsv) Build(configuration configuration.FormatConfiguration) (result common.Format, err error) {
 	var separator string
 	if separator, err = configuration.Options.GetStringOrDefault("separator", ","); err != nil {
 		return result, err
 	}
 	var quoteChar string
-	if quoteChar, err = configuration.Options.GetStringOrDefault("quoteChar", `"`); err != nil {
+	if quoteChar, err = configuration.Options.GetStringOrDefault("quoteChar", ""); err != nil {
 		return result, err
 	}
+	var quoteBehaviour string
+	if quoteBehaviour, err = configuration.Options.GetStringOrDefault("quoteBehaviour", "strings"); err != nil {
+		return result, err
+	}
+	if strings.ToLower(quoteBehaviour) != quoteBehaviourAlways &&
+		strings.ToLower(quoteBehaviour) != quoteBehaviourNever &&
+		strings.ToLower(quoteBehaviour) != quoteBehaviourStrings {
+		err = errors.New(fmt.Sprintf("quoteBehaviour value '%s' not supported", quoteBehaviour))
+		return result, err
+	}
+	quoteBehaviour = strings.ToLower(quoteBehaviour)
 	var headers bool
 	if headers, err = configuration.Options.GetBoolOrDefault("headers", true); err != nil {
 		return result, err
@@ -34,21 +51,23 @@ func (b BuilderCsv) Build(configuration configuration.FormatConfiguration) (resu
 			finalColumnArray = append(finalColumnArray, column)
 		}
 	}
-	result = FormatCsv{
-		separator: separator,
-		quoteChar: quoteChar,
-		headers:   headers,
-		columns:   finalColumnArray,
+	result = &FormatCsv{
+		separator:      separator,
+		quoteChar:      quoteChar,
+		headers:        headers,
+		columns:        finalColumnArray,
+		quoteBehaviour: quoteBehaviour,
 	}
 	return result, err
 }
 
 type FormatCsv struct {
-	separator string
-	quoteChar string
-	headers   bool
-	columns   []string
-	config    []csvConfig
+	separator      string
+	quoteChar      string
+	headers        bool
+	columns        []string
+	config         []csvConfig
+	quoteBehaviour string
 }
 
 type csvConfig struct {
@@ -56,15 +75,16 @@ type csvConfig struct {
 	valuePath  []string
 }
 
-func (f FormatCsv) Format(generatedObject common.GeneratedObject) (result string, err error) {
+func (f *FormatCsv) Format(generatedObject common.GeneratedObject) (result string, err error) {
 	if f.config == nil {
 		f.config = []csvConfig{}
-		getCsvConfigFrom(generatedObject.Object, &f, []string{})
-		filterAndOrderColumns(&f)
+		getCsvConfigFrom(generatedObject.Object, f, []string{})
+		filterAndOrderColumns(f)
 	}
 	result = ""
 	if f.headers {
 		result = fmt.Sprintln(f.doFormatHeader())
+		f.headers = false
 	}
 	var line string
 	if line, err = f.doFormatCsv(generatedObject); err != nil {
@@ -74,24 +94,37 @@ func (f FormatCsv) Format(generatedObject common.GeneratedObject) (result string
 	return result, err
 }
 
-func (f FormatCsv) doFormatCsv(generatedObject common.GeneratedObject) (result string, err error) {
+func (f *FormatCsv) doFormatCsv(generatedObject common.GeneratedObject) (result string, err error) {
 	temp := make([]string, len(f.config))
 	for i, fieldConfig := range f.config {
 		if value, exists := generatedObject.GetValue(fieldConfig.valuePath); exists {
-			temp[i] = fmt.Sprintf("%v", value)
+			temp[i] = f.quoteIfNeeded(value)
 		} else {
 			err = errors.New(fmt.Sprintf("field %s not found", strings.Join(fieldConfig.valuePath, ".")))
 			return result, err
 		}
 	}
+	result = strings.Join(temp, f.separator)
 	return result, err
 }
 
-func (f FormatCsv) doFormatHeader() (result string) {
-	for _, c := range f.config {
-		result = fmt.Sprintf("%s%s%s", result, f.separator, c)
+func (f *FormatCsv) doFormatHeader() (result string) {
+	headers := make([]string, len(f.config))
+	for i, c := range f.config {
+		headers[i] = f.quoteIfNeeded(c.headerName)
 	}
+	result = strings.Join(headers, f.separator)
 	return result
+}
+
+func (f *FormatCsv) quoteIfNeeded(value interface{}) string {
+	_, isString := value.(string)
+	shouldQuote := f.quoteBehaviour == quoteBehaviourAlways || (f.quoteBehaviour == quoteBehaviourStrings && isString)
+	if shouldQuote {
+		return fmt.Sprintf("%s%v%s", f.quoteChar, value, f.quoteChar)
+	} else {
+		return fmt.Sprintf("%v", value)
+	}
 }
 
 func getCsvConfigFrom(object interface{}, f *FormatCsv, path []string) {

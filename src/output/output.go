@@ -17,7 +17,7 @@ type FormatThenOutput struct {
 
 func (o FormatThenOutput) FormatAndWrite(object interface{}) (err error) {
 	var formattedObject string
-	if formattedObject, err = o.Format.Format(object); err != nil {
+	if formattedObject, err = o.Format.Format(common.GeneratedObject{Object: object}); err != nil {
 		return err
 	}
 	if err = o.Output.Write(formattedObject); err != nil {
