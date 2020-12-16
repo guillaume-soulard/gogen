@@ -9,11 +9,11 @@ type GeneratedObject struct {
 }
 
 func (g GeneratedObject) GetValue(path []string) (result interface{}, exists bool) {
-	result, exists = getValue(g.Object, path)
+	result, exists = GetValue(g.Object, path)
 	return result, exists
 }
 
-func getValue(object interface{}, path []string) (result interface{}, exists bool) {
+func GetValue(object interface{}, path []string) (result interface{}, exists bool) {
 	exists = false
 	pathLen := len(path)
 	if pathLen > 0 {
@@ -22,7 +22,7 @@ func getValue(object interface{}, path []string) (result interface{}, exists boo
 			if result, exists = mapValue[field]; exists {
 				if pathLen > 1 {
 					newPath := path[1:]
-					result, exists = getValue(result, newPath)
+					result, exists = GetValue(result, newPath)
 				}
 			}
 		}

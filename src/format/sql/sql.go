@@ -3,6 +3,7 @@ package sql
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/ogama/gogen/src/configuration"
 	"github.com/ogama/gogen/src/format/common"
 	"strings"
@@ -71,8 +72,42 @@ func (f *FormatSql) Format(generatedObject common.GeneratedObject) (result strin
 
 func (f *FormatSql) generateSqlForObject(fieldPath string, object map[string]interface{}, statements *[]string) {
 	if tableMapping, exists := f.tables[fieldPath]; exists {
-		generateSqlForObjectAndMapping(tableMapping, object, statements)
+		f.generateSqlForObjectWithMapping(tableMapping, object, statements)
 	} else {
-		generateSqlForObjectWithoutMapping(object, statements)
+		f.generateSqlForObjectWithoutMapping(object, statements)
+	}
+}
+
+func (f *FormatSql) generateSqlForObjectWithMapping(mapping tableMapping, object map[string]interface{}, statements *[]string) (err error) {
+	columnNames := make([]string, len(mapping.fields))
+	values := make([]string, len(mapping.fields))
+	var exists bool
+	var value interface
+	for i, field := range mapping.fields {
+		columnNames[i] = field.column
+		if value, exists = common.GetValue(field, []string { field.name }); !exists {
+			err = errors.New(fmt.Sprintf("field %s not found in generated object", field.name))
+			return err
+		}
+		values[i] = f.getSqlValueFor(value)
+	}
+	return err
+}
+
+func (f *FormatSql) getSqlValueFor(value interface{}) string {
+	if stringValue, isString := value.(string); isString {
+		return fmt.Sprintf("'%s'", stringValue)
+	} else {
+		return fmt.Sprintf("%v", value)
+	}
+}
+
+func (f *FormatSql) generateSqlForObjectWithoutMapping(object map[string]interface{}, statements *[]string) {
+	for fieldName, fieldValue := range object {
+		if mapValue, isMap := fieldValue.(map[string]interface{}); isMap {
+			f.generateSqlForObject()
+		} else {
+
+		}
 	}
 }
