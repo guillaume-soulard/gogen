@@ -46,11 +46,8 @@
     {
       "type": "stdout",
       "format": {
-        "type": "csv",
+        "type": "sql",
         "options": {
-          "separator": ";",
-          "columns": "id,firstName",
-          "quoteChar": "\""
         }
       }
     }
