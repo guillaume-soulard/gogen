@@ -1,9 +1,37 @@
 package common
 
-import "github.com/ogama/gogen/src/configuration"
+import (
+	"github.com/ogama/gogen/src/configuration"
+)
+
+type GeneratedObject struct {
+	Object interface{}
+}
+
+func (g GeneratedObject) GetValue(path []string) (result interface{}, exists bool) {
+	result, exists = GetValue(g.Object, path)
+	return result, exists
+}
+
+func GetValue(object interface{}, path []string) (result interface{}, exists bool) {
+	exists = false
+	pathLen := len(path)
+	if pathLen > 0 {
+		field := path[0]
+		if mapValue, isMap := object.(map[string]interface{}); isMap {
+			if result, exists = mapValue[field]; exists {
+				if pathLen > 1 {
+					newPath := path[1:]
+					result, exists = GetValue(result, newPath)
+				}
+			}
+		}
+	}
+	return result, exists
+}
 
 type Format interface {
-	Format(object interface{}) (result string, err error)
+	Format(generatedObject GeneratedObject) (result string, err error)
 }
 
 type Builder interface {

@@ -34,15 +34,20 @@
         },
         "truncate": "hours"
       }
+    },
+    "static": {
+      "field": {
+        "subField": "test",
+        "subField1": 12
+      }
     }
   },
   "outputs": [
     {
       "type": "stdout",
       "format": {
-        "type": "json",
+        "type": "sql",
         "options": {
-          "pretty": false
         }
       }
     }
