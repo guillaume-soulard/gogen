@@ -4,24 +4,6 @@
 ** -e : estimate the dataset size
 ** -l : limit the amount of bytes to generate
 * Support of custom date format
-* Custom format :
-** Custom string format : "$.field1 $.field2.subField"
-** Built-in output :
-*** SQL
-*** CSV
-**** Options
-***** separatorChar (default ',')
-***** quoteChar (default '"')
-***** quote (default "never") (values "never" | "always" | "strings")
-***** headers (true / false)
-*** YAML
-*** XML
-**** Options
-***** pretty (true / false)
-***** indent (true / false)
-*** JSON (implemented)
-**** Options
-***** pretty (true / false)
 * Custom output :
 ** Stdout (implemented)
 ** File(s)
