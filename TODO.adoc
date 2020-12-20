@@ -5,8 +5,6 @@
 ** -l : limit the amount of bytes to generate
 * Support of custom date format
 * Custom output :
-** Stdout (implemented)
-** File(s)
 ** Postgresql
 ** Redis
 ** Blackhole ?
