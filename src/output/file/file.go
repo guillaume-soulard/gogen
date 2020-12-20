@@ -13,23 +13,29 @@ func (b BuilderFile) Build(configuration configuration.OutputConfiguration) (res
 	if fileName, err = configuration.Options.GetStringOrDefault("fileName", ""); err != nil {
 		return result, err
 	}
-	var maxFileSizeInByte int64
-	if maxFileSizeInByte, err =
+	var file *os.File
+	if file, err = os.Open(fileName); err != nil {
+		return result, err
+	}
 	result = OutputFile{
-		FileName:        fileName,
-		MaxFileSizeByte: 0,
-		file:            os.File{},
+		file: file,
 	}
 	return result, err
 }
 
 type OutputFile struct {
-	FileName        string `json:"fileName"`
-	MaxFileSizeByte int64 `json:"maxFileSize"`
-	file            os.File
+	file *os.File
+}
+
+func (o OutputFile) Begin() (err error) {
+	return err
 }
 
 func (o OutputFile) Write(object string) (err error) {
 	dfgh
+	return err
+}
+
+func (o OutputFile) End() (err error) {
 	return err
 }

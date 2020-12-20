@@ -19,6 +19,10 @@ type FormatJson struct {
 	pretty bool
 }
 
+func (f *FormatJson) Start() (err error) {
+	return err
+}
+
 func (f FormatJson) Format(generatedObject common.GeneratedObject) (result string, err error) {
 	var marshalResult []byte
 	if f.pretty {
@@ -28,4 +32,8 @@ func (f FormatJson) Format(generatedObject common.GeneratedObject) (result strin
 	}
 	result = string(marshalResult)
 	return result, err
+}
+
+func (f *FormatJson) End() (err error) {
+	return err
 }

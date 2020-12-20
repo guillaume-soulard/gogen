@@ -15,7 +15,15 @@ func (b BuilderStdout) Build(_ configuration.OutputConfiguration) (result common
 
 type OutputStdout struct{}
 
+func (o OutputStdout) Begin() (err error) {
+	return err
+}
+
 func (o OutputStdout) Write(object string) (err error) {
 	fmt.Println(object)
+	return err
+}
+
+func (o OutputStdout) End() (err error) {
 	return err
 }

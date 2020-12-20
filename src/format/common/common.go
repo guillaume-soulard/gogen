@@ -31,7 +31,9 @@ func GetValue(object interface{}, path []string) (result interface{}, exists boo
 }
 
 type Format interface {
+	Begin() (err error)
 	Format(generatedObject GeneratedObject) (result string, err error)
+	End() (err error)
 }
 
 type Builder interface {

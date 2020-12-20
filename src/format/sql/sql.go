@@ -60,6 +60,10 @@ type FormatSql struct {
 	tables map[string]tableMapping
 }
 
+func (f *FormatSql) Start() (err error) {
+	return err
+}
+
 func (f *FormatSql) Format(generatedObject common.GeneratedObject) (result string, err error) {
 	statements := make([]string, 0)
 	if mapValue, isMap := generatedObject.Object.(map[string]interface{}); isMap {
@@ -71,6 +75,10 @@ func (f *FormatSql) Format(generatedObject common.GeneratedObject) (result strin
 		err = errors.New("root is not an object")
 	}
 	return result, err
+}
+
+func (f *FormatSql) End() (err error) {
+	return err
 }
 
 func (f *FormatSql) generateSqlForObject(fieldPath string, object map[string]interface{}, statements *[]string) (err error) {

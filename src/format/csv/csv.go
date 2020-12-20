@@ -75,6 +75,10 @@ type csvConfig struct {
 	valuePath  []string
 }
 
+func (f *FormatCsv) Begin() (err error) {
+	return err
+}
+
 func (f *FormatCsv) Format(generatedObject common.GeneratedObject) (result string, err error) {
 	if f.config == nil {
 		f.config = []csvConfig{}
@@ -92,6 +96,10 @@ func (f *FormatCsv) Format(generatedObject common.GeneratedObject) (result strin
 	}
 	result = fmt.Sprintf("%s%s", result, line)
 	return result, err
+}
+
+func (f *FormatCsv) End() (err error) {
+	return err
 }
 
 func (f *FormatCsv) doFormatCsv(generatedObject common.GeneratedObject) (result string, err error) {
