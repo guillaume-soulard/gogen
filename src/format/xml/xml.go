@@ -28,6 +28,10 @@ type FormatXml struct {
 	objectRootName string
 }
 
+func (f FormatXml) Begin() (err error) {
+	return err
+}
+
 func (f FormatXml) Format(generatedObject common.GeneratedObject) (result string, err error) {
 	var marshalResult []byte
 	if err = formatTimeRecursively(&generatedObject.Object); err != nil {
@@ -40,6 +44,10 @@ func (f FormatXml) Format(generatedObject common.GeneratedObject) (result string
 	}
 	result = string(marshalResult)
 	return result, err
+}
+
+func (f FormatXml) End() (err error) {
+	return err
 }
 
 func formatTimeRecursively(object *interface{}) (err error) {

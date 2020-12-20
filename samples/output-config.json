@@ -44,11 +44,12 @@
   },
   "outputs": [
     {
-      "type": "stdout",
+      "type": "file",
       "format": {
-        "type": "sql",
-        "options": {
-        }
+        "type": "sql"
+      },
+      "options": {
+        "fileName": "test.sql"
       }
     }
   ]

@@ -17,6 +17,9 @@ func (m Model) Generate(context *GeneratorContext) (err error) {
 	if outputs, err = getOutputsFrom(context); err != nil {
 		return err
 	}
+	if err = doBeginOutput(&outputs); err != nil {
+		return err
+	}
 	for i := 1; i <= context.Config.Options.Amount; i++ {
 		var generatedObject interface{}
 		if generatedObject, err = m.ObjectModel.Generate(context, Generate); err != nil {
@@ -31,6 +34,9 @@ func (m Model) Generate(context *GeneratorContext) (err error) {
 		if interval > 0 {
 			time.Sleep(time.Millisecond * time.Duration(interval))
 		}
+	}
+	if err = doEndOutput(&outputs); err != nil {
+		return err
 	}
 	endTime := time.Now()
 	fmt.Println(fmt.Sprintf("Generation end took : %s", endTime.Sub(startTime).String()))
@@ -52,9 +58,27 @@ func getOutputsFrom(context *GeneratorContext) (outputs []output.FormatThenOutpu
 	return outputs, err
 }
 
+func doBeginOutput(outputs *[]output.FormatThenOutput) (err error) {
+	for _, o := range *outputs {
+		if err = o.Begin(); err != nil {
+			return err
+		}
+	}
+	return err
+}
+
 func doOutput(outputs *[]output.FormatThenOutput, object interface{}) (err error) {
 	for _, o := range *outputs {
 		if err = o.FormatAndWrite(object); err != nil {
+			return err
+		}
+	}
+	return err
+}
+
+func doEndOutput(outputs *[]output.FormatThenOutput) (err error) {
+	for _, o := range *outputs {
+		if err = o.End(); err != nil {
 			return err
 		}
 	}

@@ -60,7 +60,7 @@ type FormatSql struct {
 	tables map[string]tableMapping
 }
 
-func (f *FormatSql) Start() (err error) {
+func (f *FormatSql) Begin() (err error) {
 	return err
 }
 
@@ -115,7 +115,7 @@ func (f *FormatSql) getSqlValueFor(value interface{}) string {
 	if stringValue, isString := value.(string); isString {
 		return fmt.Sprintf("'%s'", stringValue)
 	} else if timeValue, isTime := value.(time.Time); isTime {
-		return timeValue.Format(time.RFC3339)
+		return fmt.Sprintf("'%s'", timeValue.Format(time.RFC3339))
 	} else {
 		return fmt.Sprintf("%v", value)
 	}

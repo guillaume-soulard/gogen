@@ -19,7 +19,7 @@ type FormatJson struct {
 	pretty bool
 }
 
-func (f *FormatJson) Start() (err error) {
+func (f FormatJson) Begin() (err error) {
 	return err
 }
 
@@ -34,6 +34,6 @@ func (f FormatJson) Format(generatedObject common.GeneratedObject) (result strin
 	return result, err
 }
 
-func (f *FormatJson) End() (err error) {
+func (f FormatJson) End() (err error) {
 	return err
 }

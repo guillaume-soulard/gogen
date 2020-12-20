@@ -7,6 +7,7 @@ import (
 	"github.com/ogama/gogen/src/format"
 	"github.com/ogama/gogen/src/format/common"
 	commonOutput "github.com/ogama/gogen/src/output/common"
+	"github.com/ogama/gogen/src/output/file"
 	"github.com/ogama/gogen/src/output/stdout"
 )
 
@@ -21,6 +22,26 @@ func (o FormatThenOutput) FormatAndWrite(object interface{}) (err error) {
 		return err
 	}
 	if err = o.Output.Write(formattedObject); err != nil {
+		return err
+	}
+	return err
+}
+
+func (o FormatThenOutput) Begin() (err error) {
+	if err = o.Format.Begin(); err != nil {
+		return err
+	}
+	if err = o.Output.Begin(); err != nil {
+		return err
+	}
+	return err
+}
+
+func (o FormatThenOutput) End() (err error) {
+	if err = o.Format.End(); err != nil {
+		return err
+	}
+	if err = o.Output.End(); err != nil {
 		return err
 	}
 	return err
@@ -70,6 +91,7 @@ func (s StrategyOutput) GetDefaultOutput() FormatThenOutput {
 var Outputs = StrategyOutput{
 	outputs: map[string]commonOutput.Builder{
 		"stdout": stdout.BuilderStdout{},
+		"file":   file.BuilderFile{},
 	},
 	defaultOutput: stdout.BuilderStdout{},
 }
