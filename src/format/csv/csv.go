@@ -79,7 +79,7 @@ func (f *FormatCsv) Begin() (err error) {
 	return err
 }
 
-func (f *FormatCsv) Format(generatedObject common.GeneratedObject) (result string, err error) {
+func (f *FormatCsv) Format(generatedObject common.GeneratedObject, context *common.FormatContext) (result string, err error) {
 	if f.config == nil {
 		f.config = []csvConfig{}
 		getCsvConfigFrom(generatedObject.Object, f, []string{})

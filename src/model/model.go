@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"github.com/ogama/gogen/src/format/common"
 	"github.com/ogama/gogen/src/output"
 	"time"
 )
@@ -21,6 +22,9 @@ func (m Model) Generate(context *GeneratorContext) (err error) {
 		return err
 	}
 	context.Skip(context)
+	formatContext := common.FormatContext{
+		Config: context.Config,
+	}
 	for i := 1; i <= context.Config.Options.Amount; i++ {
 		var generatedObject interface{}
 		if generatedObject, err = m.ObjectModel.Generate(context, Generate); err != nil {
@@ -29,7 +33,7 @@ func (m Model) Generate(context *GeneratorContext) (err error) {
 		if objectMap, isMap := generatedObject.(map[string]interface{}); isMap {
 			generatedObject = objectMap["template"]
 		}
-		if err = doOutput(&outputs, generatedObject); err != nil {
+		if err = doOutput(&outputs, &formatContext, generatedObject); err != nil {
 			return err
 		}
 		if interval > 0 {
@@ -68,9 +72,9 @@ func doBeginOutput(outputs *[]output.FormatThenOutput) (err error) {
 	return err
 }
 
-func doOutput(outputs *[]output.FormatThenOutput, object interface{}) (err error) {
+func doOutput(outputs *[]output.FormatThenOutput, context *common.FormatContext, object interface{}) (err error) {
 	for _, o := range *outputs {
-		if err = o.FormatAndWrite(object); err != nil {
+		if err = o.FormatAndWrite(object, context); err != nil {
 			return err
 		}
 	}

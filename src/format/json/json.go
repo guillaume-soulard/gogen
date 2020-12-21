@@ -23,7 +23,7 @@ func (f FormatJson) Begin() (err error) {
 	return err
 }
 
-func (f FormatJson) Format(generatedObject common.GeneratedObject) (result string, err error) {
+func (f FormatJson) Format(generatedObject common.GeneratedObject, context *common.FormatContext) (result string, err error) {
 	var marshalResult []byte
 	if f.pretty {
 		marshalResult, err = jsonEncode.MarshalIndent(generatedObject.Object, "", "  ")

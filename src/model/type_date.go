@@ -17,13 +17,12 @@ type DateType struct {
 
 func (d *DateType) Generate(context *GeneratorContext, _ GenerationRequest) (result interface{}, err error) {
 	date := time.Unix(context.GenerateInteger64Between(d.min.Unix(), d.max.Unix()), 0).In(time.UTC)
-	var duration time.Duration
-	if duration, err = getDurationFrom(d.truncate); err != nil {
+	if err = d.truncateDate(&date); err != nil {
 		return result, err
 	}
-	date = date.Truncate(duration)
 	date = date.In(time.UTC)
-	return date, err
+	result = date.Format(getDateFormatOrDefault(context.Config.Options.DateFormat))
+	return result, err
 }
 
 func (d *DateType) GetName() string {
@@ -43,14 +42,15 @@ func (d DateTypeFactory) DefaultOptions() TypeOptions {
 
 func (d DateTypeFactory) New(parameters TypeFactoryParameter) (generator TypeGenerator, err error) {
 	var min, max time.Time
-	if min, err = time.ParseInLocation(constants.DateFormat, parameters.Options.GetOptionAsString("bounds.min"), time.UTC); err != nil {
+	dateFormat := getDateFormatOrDefault(parameters.Configuration.Options.DateFormat)
+	if min, err = time.ParseInLocation(dateFormat, parameters.Options.GetOptionAsString("bounds.min"), time.UTC); err != nil {
 		return generator, err
 	}
-	if max, err = time.ParseInLocation(constants.DateFormat, parameters.Options.GetOptionAsString("bounds.max"), time.UTC); err != nil {
+	if max, err = time.ParseInLocation(dateFormat, parameters.Options.GetOptionAsString("bounds.max"), time.UTC); err != nil {
 		return generator, err
 	}
 	if min.After(max) {
-		return generator, errors.New(fmt.Sprintf("bounds.min = %s is greater than bounds.max = %s", min.Format(constants.DateFormat), max.Format(constants.DateFormat)))
+		return generator, errors.New(fmt.Sprintf("bounds.min = %s is greater than bounds.max = %s", min.Format(parameters.Configuration.Options.DateFormat), max.Format(parameters.Configuration.Options.DateFormat)))
 	}
 	return &DateType{
 		min:      min,
@@ -60,18 +60,31 @@ func (d DateTypeFactory) New(parameters TypeFactoryParameter) (generator TypeGen
 	}, err
 }
 
-func getDurationFrom(truncation string) (result time.Duration, err error) {
-	switch strings.ToLower(truncation) {
-	case "milliseconds":
-		result = time.Millisecond
-	case "seconds":
-		result = time.Second
-	case "minutes":
-		result = time.Minute
-	case "hours":
-		result = time.Hour
-	default:
-		err = errors.New(fmt.Sprintf("unsupported truncate %s", truncation))
+func getDateFormatOrDefault(dateFormat string) string {
+	if dateFormat == "" {
+		return constants.DateFormat
 	}
-	return result, err
+	return dateFormat
+}
+
+func (d *DateType) truncateDate(date *time.Time) (err error) {
+	switch strings.ToLower(d.truncate) {
+	case "milliseconds":
+		*date = date.Truncate(time.Millisecond)
+	case "seconds":
+		*date = date.Truncate(time.Second)
+	case "minutes":
+		*date = date.Truncate(time.Minute)
+	case "hours":
+		*date = date.Truncate(time.Hour)
+	case "days":
+		*date = time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, date.Location())
+	case "months":
+		*date = time.Date(date.Year(), date.Month(), 1, 0, 0, 0, 0, date.Location())
+	case "years":
+		*date = time.Date(date.Year(), time.January, 1, 0, 0, 0, 0, date.Location())
+	default:
+		err = errors.New(fmt.Sprintf("unsupported truncate %s", d.truncate))
+	}
+	return err
 }

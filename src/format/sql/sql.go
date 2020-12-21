@@ -7,7 +7,6 @@ import (
 	"github.com/ogama/gogen/src/configuration"
 	"github.com/ogama/gogen/src/format/common"
 	"strings"
-	"time"
 )
 
 type BuilderSql struct{}
@@ -64,10 +63,10 @@ func (f *FormatSql) Begin() (err error) {
 	return err
 }
 
-func (f *FormatSql) Format(generatedObject common.GeneratedObject) (result string, err error) {
+func (f *FormatSql) Format(generatedObject common.GeneratedObject, context *common.FormatContext) (result string, err error) {
 	statements := make([]string, 0)
 	if mapValue, isMap := generatedObject.Object.(map[string]interface{}); isMap {
-		if err = f.generateSqlForObject("", mapValue, &statements); err != nil {
+		if err = f.generateSqlForObject("", mapValue, &statements, context); err != nil {
 			return result, err
 		}
 		result = fmt.Sprintf("%s\n", strings.Join(statements, "\n"))
@@ -81,9 +80,9 @@ func (f *FormatSql) End() (err error) {
 	return err
 }
 
-func (f *FormatSql) generateSqlForObject(fieldPath string, object map[string]interface{}, statements *[]string) (err error) {
+func (f *FormatSql) generateSqlForObject(fieldPath string, object map[string]interface{}, statements *[]string, context *common.FormatContext) (err error) {
 	if tableMapping, exists := f.tables[fieldPath]; exists {
-		if err = f.generateSqlForObjectWithMapping(tableMapping, object, statements); err != nil {
+		if err = f.generateSqlForObjectWithMapping(tableMapping, object, statements, context); err != nil {
 			return err
 		}
 	} else {
@@ -94,7 +93,7 @@ func (f *FormatSql) generateSqlForObject(fieldPath string, object map[string]int
 	return err
 }
 
-func (f *FormatSql) generateSqlForObjectWithMapping(mapping tableMapping, object map[string]interface{}, statements *[]string) (err error) {
+func (f *FormatSql) generateSqlForObjectWithMapping(mapping tableMapping, object map[string]interface{}, statements *[]string, context *common.FormatContext) (err error) {
 	columnNames := make([]string, len(mapping.Fields))
 	values := make([]string, len(mapping.Fields))
 	var exists bool
@@ -105,17 +104,15 @@ func (f *FormatSql) generateSqlForObjectWithMapping(mapping tableMapping, object
 			err = errors.New(fmt.Sprintf("field %s not found in generated object", field.Name))
 			return err
 		}
-		values[i] = f.getSqlValueFor(value)
+		values[i] = f.getSqlValueFor(value, context)
 	}
 	buildSqlStatement(columnNames, values, statements)
 	return err
 }
 
-func (f *FormatSql) getSqlValueFor(value interface{}) string {
+func (f *FormatSql) getSqlValueFor(value interface{}, context *common.FormatContext) string {
 	if stringValue, isString := value.(string); isString {
 		return fmt.Sprintf("'%s'", stringValue)
-	} else if timeValue, isTime := value.(time.Time); isTime {
-		return fmt.Sprintf("'%s'", timeValue.Format(time.RFC3339))
 	} else {
 		return fmt.Sprintf("%v", value)
 	}
@@ -126,12 +123,12 @@ func (f *FormatSql) generateSqlForObjectWithoutMapping(fieldPath string, object 
 	values := make([]string, 0)
 	for fieldName, fieldValue := range object {
 		if mapValue, isMap := fieldValue.(map[string]interface{}); isMap {
-			if err = f.generateSqlForObject(fmt.Sprintf("%s.%s", fieldPath, fieldName), mapValue, statements); err != nil {
+			if err = f.generateSqlForObject(fmt.Sprintf("%s.%s", fieldPath, fieldName), mapValue, statements, nil); err != nil {
 				return err
 			}
 		} else {
 			columnNames = append(columnNames, fieldName)
-			values = append(values, f.getSqlValueFor(fieldValue))
+			values = append(values, f.getSqlValueFor(fieldValue, nil))
 		}
 	}
 	buildSqlStatement(columnNames, values, statements)

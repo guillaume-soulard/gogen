@@ -4,7 +4,6 @@ import (
 	"github.com/ogama/gogen/src/configuration"
 	"github.com/stretchr/testify/assert"
 	"testing"
-	"time"
 )
 
 func Test_New_should_generate_type_without_error(t *testing.T) {
@@ -29,7 +28,7 @@ func Test_Generate_should_generate_a_type_date(t *testing.T) {
 	// WHEN
 	result, _ := generator.Generate(&context, Generate)
 	// THEN
-	assert.IsType(t, time.Time{}, result)
+	assert.IsType(t, "", result)
 }
 
 func Test_Generate_should_generate_a_date(t *testing.T) {
@@ -47,5 +46,5 @@ func Test_Generate_should_generate_a_date(t *testing.T) {
 	// WHEN
 	result, _ := generator.Generate(&context, Generate)
 	// THEN
-	assert.Equal(t, time.Date(2020, time.June, 11, 14, 32, 24, 0, time.UTC), result)
+	assert.Equal(t, "2020-06-11T14:32:24Z", result)
 }

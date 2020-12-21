@@ -30,9 +30,13 @@ func GetValue(object interface{}, path []string) (result interface{}, exists boo
 	return result, exists
 }
 
+type FormatContext struct {
+	Config configuration.Configuration
+}
+
 type Format interface {
 	Begin() (err error)
-	Format(generatedObject GeneratedObject) (result string, err error)
+	Format(generatedObject GeneratedObject, context *FormatContext) (result string, err error)
 	End() (err error)
 }
 

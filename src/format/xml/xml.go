@@ -4,7 +4,6 @@ import (
 	"github.com/clbanning/anyxml"
 	"github.com/ogama/gogen/src/configuration"
 	"github.com/ogama/gogen/src/format/common"
-	"time"
 )
 
 type BuilderXml struct{}
@@ -32,11 +31,8 @@ func (f FormatXml) Begin() (err error) {
 	return err
 }
 
-func (f FormatXml) Format(generatedObject common.GeneratedObject) (result string, err error) {
+func (f FormatXml) Format(generatedObject common.GeneratedObject, context *common.FormatContext) (result string, err error) {
 	var marshalResult []byte
-	if err = formatTimeRecursively(&generatedObject.Object); err != nil {
-		return result, err
-	}
 	if f.pretty {
 		marshalResult, err = anyxml.XmlIndent(generatedObject.Object, "", "  ", f.objectRootName)
 	} else {
@@ -47,16 +43,5 @@ func (f FormatXml) Format(generatedObject common.GeneratedObject) (result string
 }
 
 func (f FormatXml) End() (err error) {
-	return err
-}
-
-func formatTimeRecursively(object *interface{}) (err error) {
-	if mapObject, isMap := (*object).(map[string]interface{}); isMap {
-		for fieldName, fieldValue := range mapObject {
-			if timeField, isTime := fieldValue.(time.Time); isTime {
-				mapObject[fieldName] = timeField.Format(time.RFC3339)
-			}
-		}
-	}
 	return err
 }

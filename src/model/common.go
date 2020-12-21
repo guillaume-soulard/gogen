@@ -76,6 +76,9 @@ func NewGenerationContext(config configuration.Configuration) (result GeneratorC
 	}
 	result.Rand = rand.New(rand.NewSource(seed))
 	result.Config = config
+	if result.Config.Options.DateFormat == "" {
+		result.Config.Options.DateFormat = time.RFC3339
+	}
 	return result, err
 }
 

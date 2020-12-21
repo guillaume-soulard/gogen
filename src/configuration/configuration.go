@@ -17,6 +17,7 @@ type GlobalOptions struct {
 	Skip       int    `json:"skip"`
 	Alias      map[string]Configuration
 	Generation Generation `json:"generation"`
+	DateFormat string     `json:"dateFormat"`
 }
 
 type Generation struct {
