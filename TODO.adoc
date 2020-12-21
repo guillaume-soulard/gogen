@@ -3,7 +3,6 @@
 * advanced cli options :
 ** -e : estimate the dataset size
 ** -l : limit the amount of bytes to generate
-* Support of custom date format
 * Custom output :
 ** Postgresql
 ** Redis
