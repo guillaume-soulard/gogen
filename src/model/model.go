@@ -20,6 +20,7 @@ func (m Model) Generate(context *GeneratorContext) (err error) {
 	if err = doBeginOutput(&outputs); err != nil {
 		return err
 	}
+	context.Skip(context)
 	for i := 1; i <= context.Config.Options.Amount; i++ {
 		var generatedObject interface{}
 		if generatedObject, err = m.ObjectModel.Generate(context, Generate); err != nil {

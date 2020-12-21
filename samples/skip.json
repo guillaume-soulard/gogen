@@ -1,0 +1,10 @@
+{
+  "template": {
+    "_type": "number"
+  },
+  "options": {
+    "seed" : "Users",
+    "amount": 10,
+    "skip": 100
+  }
+}

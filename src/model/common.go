@@ -54,6 +54,15 @@ func (gc GeneratorContext) GenerateFloatBetween(min float64, max float64) float6
 	return min + gc.Rand.Float64()*(max-min)
 }
 
+func (gc GeneratorContext) Skip(context *GeneratorContext) {
+	skip := context.Config.Options.Skip
+	if skip > 0 {
+		for i := 0; i < skip; i++ {
+			_ = gc.Rand.Int()
+		}
+	}
+}
+
 func NewGenerationContext(config configuration.Configuration) (result GeneratorContext, err error) {
 	h := fnv.New32a()
 	var seed int64
