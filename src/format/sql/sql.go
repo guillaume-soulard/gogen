@@ -70,7 +70,7 @@ func (f *FormatSql) Format(generatedObject common.GeneratedObject) (result strin
 		if err = f.generateSqlForObject("", mapValue, &statements); err != nil {
 			return result, err
 		}
-		result = strings.Join(statements, "\n")
+		result = fmt.Sprintf("%s\n", strings.Join(statements, "\n"))
 	} else {
 		err = errors.New("root is not an object")
 	}
