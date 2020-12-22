@@ -18,7 +18,7 @@ func (s *StringType) Generate(context *GeneratorContext, _ GenerationRequest) (r
 		}
 		s.stringGenerator = stringGenerator
 	}
-	return s.stringGenerator.Generate(2147483647), err
+	return s.stringGenerator.Generate(1000), err
 }
 
 func (s *StringType) GetName() string {
