@@ -7,7 +7,18 @@
 ** -o : options path
 ** -a : amount to generate
 ** -s : seed
-* Custom output :
-** Postgresql
-** Redis
-** Blackhole ?
+* json file inclusion
+* parametrized aliases
+* allow ref type to ref multiple fields with custom format. And rename it to compute type
+* built-in aliases :
+** email
+** Text
+*** Range of number of words
+** boolean
+** Human name
+** street address
+** country
+** city
+** Phone number
+* documentation
+* go library
