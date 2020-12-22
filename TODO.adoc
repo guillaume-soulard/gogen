@@ -2,7 +2,11 @@
 
 * advanced cli options :
 ** -e : estimate the dataset size
-** -l : limit the amount of bytes to generate
+** -b : limit the amount of bytes to generate
+** -t : the type to generate
+** -o : options path
+** -a : amount to generate
+** -s : seed
 * Custom output :
 ** Postgresql
 ** Redis
