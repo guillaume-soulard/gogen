@@ -3,7 +3,7 @@ package model
 import (
 	"errors"
 	"fmt"
-	"github.com/ogama/gogen/src/constants"
+	"github.com/ogama/gogen/src/configuration"
 	"strings"
 	"time"
 )
@@ -29,12 +29,16 @@ func (d *DateType) GetName() string {
 	return ""
 }
 
+const defaultStartDate = "1970-01-01T00:00:00"
+const defaultEndDate = "2099-12-31T23:59:59"
+const defaultDateFormat = "2006-01-02T15:04:05"
+
 type DateTypeFactory struct{}
 
 func (d DateTypeFactory) DefaultOptions() TypeOptions {
 	defaultOptions := TypeOptions{}
-	defaultOptions.Add("bounds.min", "1970-01-01T00:00:00")
-	defaultOptions.Add("bounds.max", "2099-12-31T23:59:59")
+	defaultOptions.Add("bounds.min", defaultStartDate)
+	defaultOptions.Add("bounds.max", defaultEndDate)
 	defaultOptions.Add("truncate", "milliseconds")
 	defaultOptions.Add("name", "")
 	return defaultOptions
@@ -42,11 +46,12 @@ func (d DateTypeFactory) DefaultOptions() TypeOptions {
 
 func (d DateTypeFactory) New(parameters TypeFactoryParameter) (generator TypeGenerator, err error) {
 	var min, max time.Time
-	dateFormat := getDateFormatOrDefault(parameters.Configuration.Options.DateFormat)
-	if min, err = time.ParseInLocation(dateFormat, parameters.Options.GetOptionAsString("bounds.min"), time.UTC); err != nil {
+	minDate := parameters.Options.GetOptionAsString("bounds.min")
+	maxDate := parameters.Options.GetOptionAsString("bounds.max")
+	if min, err = time.ParseInLocation(getFormatToUseForDate(minDate, parameters.Configuration), minDate, time.UTC); err != nil {
 		return generator, err
 	}
-	if max, err = time.ParseInLocation(dateFormat, parameters.Options.GetOptionAsString("bounds.max"), time.UTC); err != nil {
+	if max, err = time.ParseInLocation(getFormatToUseForDate(maxDate, parameters.Configuration), maxDate, time.UTC); err != nil {
 		return generator, err
 	}
 	if min.After(max) {
@@ -60,9 +65,17 @@ func (d DateTypeFactory) New(parameters TypeFactoryParameter) (generator TypeGen
 	}, err
 }
 
+func getFormatToUseForDate(date string, configuration configuration.Configuration) string {
+	if date == defaultStartDate || date == defaultEndDate {
+		return defaultDateFormat
+	} else {
+		return getDateFormatOrDefault(configuration.Options.DateFormat)
+	}
+}
+
 func getDateFormatOrDefault(dateFormat string) string {
 	if dateFormat == "" {
-		return constants.DateFormat
+		return defaultDateFormat
 	}
 	return dateFormat
 }
