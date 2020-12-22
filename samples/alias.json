@@ -52,7 +52,7 @@
         "template": {
           "_type": "string",
           "options": {
-            "pattern": "[a-z]{10-25}@[a-z]{10-15}\\.(com|fr)"
+            "pattern": "[a-z]{10,25}@[a-z]{10,15}\\.(com|fr)"
           }
         }
       }
