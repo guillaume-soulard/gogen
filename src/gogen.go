@@ -41,7 +41,7 @@ func Execute(args Args) (err error) {
 
 func LoadConfigurationFromFile(file *os.File) (config configuration.Configuration, err error) {
 	var jsons []map[string]interface{}
-	if err = getJsonFromFilesRecursivly(file, &jsons); err != nil {
+	if err = getJsonFromFilesRecursively(file, &jsons); err != nil {
 		return config, err
 	}
 	var mergedJson []byte
@@ -54,7 +54,7 @@ func LoadConfigurationFromFile(file *os.File) (config configuration.Configuratio
 	return config, err
 }
 
-func getJsonFromFilesRecursivly(file *os.File, jsons *[]map[string]interface{}) (err error) {
+func getJsonFromFilesRecursively(file *os.File, jsons *[]map[string]interface{}) (err error) {
 	var fileContent []byte
 	if fileContent, err = ioutil.ReadAll(file); err != nil {
 		return err
@@ -74,7 +74,7 @@ func getJsonFromFilesRecursivly(file *os.File, jsons *[]map[string]interface{}) 
 					if fileToInclude, err = os.Open(fileName); err != nil {
 						return err
 					}
-					if err = getJsonFromFilesRecursivly(fileToInclude, jsons); err != nil {
+					if err = getJsonFromFilesRecursively(fileToInclude, jsons); err != nil {
 						return err
 					}
 				} else {
