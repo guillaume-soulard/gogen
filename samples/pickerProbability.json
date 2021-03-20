@@ -13,9 +13,5 @@
         }
       ]
     }
-  },
-  "options": {
-    "amount": 10,
-    "seed": "Picker probability"
   }
 }

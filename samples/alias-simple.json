@@ -1,0 +1,20 @@
+{
+  "template": {
+    "code": {
+      "_type": "sha-256"
+    }
+  },
+  "options": {
+    "amount": 10,
+    "alias": {
+      "sha-256": {
+        "template": {
+          "_type": "string",
+          "options": {
+            "pattern": "[A-Z0-9]{64}"
+          }
+        }
+      }
+    }
+  }
+}

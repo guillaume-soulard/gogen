@@ -26,7 +26,7 @@ Create a new file named `numbers.json` for example :
 Run this command
 [source,shell]
 ----
-gogen numbers.json
+gogen -f numbers.json
 ----
 
 Output
@@ -68,7 +68,7 @@ Here is the JSON structure :
 .Default global options
 |===
 |Option|Description|Default value
-|seed|The seed to use to force the randomness to be the same on each nebula call. If null, the randomness will be different on each call|null
+|seed|The seed to use to force the randomness to be the same on each nebula call. If null, the randomness will be different on each call|nil
 |amount|The amount of data to generate based on the specified template|1
 |skip|Nebula generate data based on an index. By using a seed you can generate data on specific indices using the skip property. For example if you want to generate 10 datas starting at index 10 you have to set skip property to 10 and amount to 10. 10|0
 |generation|Specify the type of generation to use possible values : "instant" or "interval"|{ type: "instant" }
@@ -207,7 +207,7 @@ Example
 |Option|Description|Allowed value|Default value
 |bounds.min|The smallest date to generate.|yyyy-MM-ddTHH:mm:ss|1970-01-01T00:00:00
 |bounds.max|The maximum date to generate.|yyyy-MM-ddTHH:mm:ss|2099-12-31T23:59:59
-|trucate|The describe how to truncate the date|`milliseconds`, `seconds`, `minutes`, `hours`|`milliseconds`
+|truncate|The describe how to truncate the date|`milliseconds`, `seconds`, `minutes`, `hours`|`milliseconds`
 |===
 
 Example
@@ -266,8 +266,87 @@ Example
 
 ==== Picker
 
+This type ramdomly pick an item among a given list
+
+|===
+|Option|Description|Allowed value|Default value
+|items|The list of items to pick|A list of items : constant value or object or probabilistic item (see bellow)|nil
+|===
+
+Probabilistic item is an object with two properties :
+
+* value : object or constant value
+* probability : a decimal number between 0 and 100
+
+The sum of all items must be equal to 100 otherwise an error will be return.
+
+Example
+----
+{
+  "template": {
+    "_type": "picker",
+    "options": {
+      "items": [
+        true,
+        false
+      ]
+    }
+  }
+}
+----
+
+Example with probability
+----
+{
+  "template": {
+    "_type": "picker",
+    "options": {
+      "items": [
+        {
+          "value": true,
+          "probability": 80
+        },
+        {
+          "value": false,
+          "probability": 20
+        }
+      ]
+    }
+  }
+}
+----
+
+==== Ref
+
 === Alias
+
+Alias allow to define type shortcut to simplify template an avoid duplicate
+
+----
+{
+  "template": {
+    "code": {
+      "_type": "sha-256"
+    }
+  },
+  "options": {
+    "amount": 10,
+    "alias": {
+      "sha-256": {
+        "template": {
+          "_type": "string",
+          "options": {
+            "pattern": "[A-Z0-9]{64}"
+          }
+        }
+      }
+    }
+  }
+}
+----
 
 ==== Custom aliases
 
 ==== Default aliases
+
+=== File inclusion
