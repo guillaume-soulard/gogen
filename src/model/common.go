@@ -3,6 +3,7 @@ package model
 import (
 	"errors"
 	"fmt"
+	"github.com/jinzhu/copier"
 	"github.com/ogama/gogen/src/configuration"
 	"hash/fnv"
 	"math/rand"
@@ -61,6 +62,11 @@ func (gc GeneratorContext) Skip(context *GeneratorContext) {
 			_ = gc.Rand.Int()
 		}
 	}
+}
+
+func (gc GeneratorContext) Copy() (newContext GeneratorContext, err error) {
+	err = copier.Copy(&newContext, &gc)
+	return newContext, err
 }
 
 func NewGenerationContext(config configuration.Configuration) (result GeneratorContext, err error) {

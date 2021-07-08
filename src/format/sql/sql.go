@@ -66,7 +66,7 @@ func (f *FormatSql) Begin() (err error) {
 func (f *FormatSql) Format(generatedObject common.GeneratedObject, context *common.FormatContext) (result string, err error) {
 	statements := make([]string, 0)
 	if mapValue, isMap := generatedObject.Object.(map[string]interface{}); isMap {
-		if err = f.generateSqlForObject("", mapValue, &statements, context); err != nil {
+		if err = f.generateSqlForObject([]string{""}, mapValue, &statements, context); err != nil {
 			return result, err
 		}
 		result = fmt.Sprintf("%s\n", strings.Join(statements, "\n"))
@@ -80,14 +80,21 @@ func (f *FormatSql) End() (err error) {
 	return err
 }
 
-func (f *FormatSql) generateSqlForObject(fieldPath string, object map[string]interface{}, statements *[]string, context *common.FormatContext) (err error) {
-	if tableMapping, exists := f.tables[fieldPath]; exists {
-		if err = f.generateSqlForObjectWithMapping(tableMapping, object, statements, context); err != nil {
+func (f *FormatSql) generateSqlForObject(fieldPath []string, object map[string]interface{}, statements *[]string, context *common.FormatContext) (err error) {
+	for objectField, objectValue := range object {
+		var objectMap map[string]interface{}
+		var isMap bool
+		if objectMap, isMap = objectValue.(map[string]interface{}); !isMap {
 			return err
 		}
-	} else {
-		if err = f.generateSqlForObjectWithoutMapping(fieldPath, object, statements); err != nil {
-			return err
+		if tableMapping, exists := f.tables[objectField]; exists {
+			if err = f.generateSqlForObjectWithMapping(tableMapping, objectMap, statements, context); err != nil {
+				return err
+			}
+		} else {
+			if err = f.generateSqlForObjectWithoutMapping(append(fieldPath, objectField), objectMap, statements, context); err != nil {
+				return err
+			}
 		}
 	}
 	return err
@@ -106,7 +113,7 @@ func (f *FormatSql) generateSqlForObjectWithMapping(mapping tableMapping, object
 		}
 		values[i] = f.getSqlValueFor(value, context)
 	}
-	buildSqlStatement(columnNames, values, statements)
+	buildSqlStatement(mapping.Table, columnNames, values, statements)
 	return err
 }
 
@@ -118,26 +125,34 @@ func (f *FormatSql) getSqlValueFor(value interface{}, context *common.FormatCont
 	}
 }
 
-func (f *FormatSql) generateSqlForObjectWithoutMapping(fieldPath string, object map[string]interface{}, statements *[]string) (err error) {
+func (f *FormatSql) generateSqlForObjectWithoutMapping(fieldPath []string, object map[string]interface{}, statements *[]string, formatContext *common.FormatContext) (err error) {
 	columnNames := make([]string, 0)
 	values := make([]string, 0)
 	for fieldName, fieldValue := range object {
 		if mapValue, isMap := fieldValue.(map[string]interface{}); isMap {
-			if err = f.generateSqlForObject(fmt.Sprintf("%s.%s", fieldPath, fieldName), mapValue, statements, nil); err != nil {
+			if err = f.generateSqlForObject(append(fieldPath, fieldName), mapValue, statements, nil); err != nil {
 				return err
+			}
+		} else if array, isArray := fieldValue.([]interface{}); isArray {
+			for _, arrayItem := range array {
+				if mapValue, isMap := arrayItem.(map[string]interface{}); isMap {
+					if err = f.generateSqlForObject(append(fieldPath, fieldName), mapValue, statements, formatContext); err != nil {
+						return err
+					}
+				}
 			}
 		} else {
 			columnNames = append(columnNames, fieldName)
 			values = append(values, f.getSqlValueFor(fieldValue, nil))
 		}
 	}
-	buildSqlStatement(columnNames, values, statements)
+	buildSqlStatement(fieldPath[len(fieldPath)-1], columnNames, values, statements)
 	return err
 }
 
-func buildSqlStatement(columns []string, values []string, statements *[]string) {
+func buildSqlStatement(tableName string, columns []string, values []string, statements *[]string) {
 	if len(columns) > 0 && len(values) > 0 {
-		statement := fmt.Sprintf("INSERT INTO (%s) VALUES (%s);", strings.Join(columns, ","), strings.Join(values, ","))
+		statement := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s);", tableName, strings.Join(columns, ","), strings.Join(values, ","))
 		*statements = append([]string{statement}, *statements...)
 	}
 }
