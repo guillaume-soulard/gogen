@@ -14,14 +14,16 @@ type BuilderSql struct{}
 func (b BuilderSql) Build(configuration configuration.FormatConfiguration) (result common.Format, err error) {
 	var tables []tableMapping
 	var tableConfig string
-	if tableConfig, err = configuration.Options.GetObjectAsStringOrDefault("tables", "[]"); err != nil {
+	defaultMapping := "[]"
+	if tableConfig, err = configuration.Options.GetObjectAsStringOrDefault("tables", defaultMapping); err != nil {
 		return result, err
 	}
 	if err = json.Unmarshal([]byte(tableConfig), &tables); err != nil {
 		return result, err
 	}
 	result = &FormatSql{
-		tables: buildTableMap(tables),
+		tables:            buildTableMap(tables),
+		hasDefinedMapping: tableConfig != defaultMapping,
 	}
 	return result, err
 }
@@ -56,14 +58,56 @@ type tableMapping struct {
 }
 
 type FormatSql struct {
-	tables map[string]tableMapping
+	tables            map[string]tableMapping
+	hasDefinedMapping bool
 }
 
 func (f *FormatSql) Begin() (err error) {
 	return err
 }
 
-func (f *FormatSql) Format(generatedObject common.GeneratedObject, context *common.FormatContext) (result string, err error) {
+func createDefaultMapping(field string, object interface{}, format *FormatSql) (err error) {
+	if objectMap, isMap := getMap(object); isMap {
+		fieldsToMap := make([]string, 0)
+		for fieldName, fieldValue := range objectMap {
+			if fieldMap, isFieldMap := getMap(fieldValue); isFieldMap {
+				if err = createDefaultMapping(fieldName, fieldMap, format); err != nil {
+					return err
+				}
+			} else if fieldArray, isFieldArray := getArray(fieldValue); isFieldArray {
+				for _, arrayItem := range fieldArray {
+					if err = createDefaultMapping(fieldName, arrayItem, format); err != nil {
+						return err
+					}
+				}
+			} else {
+				fieldsToMap = append(fieldsToMap, fieldName)
+			}
+		}
+		if _, mappingExists := format.tables[field]; !mappingExists && field != "" {
+			fieldsMapping := make(map[string]fieldMapping)
+			for _, field := range fieldsToMap {
+				fieldsMapping[field] = fieldMapping{
+					Name:   field,
+					Column: field,
+				}
+			}
+			format.tables[field] = tableMapping{
+				Name:     field,
+				Table:    field,
+				fieldMap: fieldsMapping,
+			}
+		}
+	}
+	return err
+}
+
+func (f *FormatSql) Format(generatedObject common.GeneratedObject, _ *common.FormatContext) (result string, err error) {
+	if !f.hasDefinedMapping {
+		f.tables = make(map[string]tableMapping)
+		err = createDefaultMapping("", generatedObject.Object, f)
+		f.hasDefinedMapping = true
+	}
 	var objectMap map[string]interface{}
 	var isMap bool
 	statements := make([]string, 0)
@@ -90,10 +134,15 @@ func (f *FormatSql) formatObject(object map[string]interface{}, statements *[]st
 func getMap(object interface{}) (objectMap map[string]interface{}, isMap bool) {
 	if object != nil {
 		objectMap, isMap = object.(map[string]interface{})
-	} else {
-		isMap = false
 	}
 	return objectMap, isMap
+}
+
+func getArray(object interface{}) (array []interface{}, isArray bool) {
+	if object != nil {
+		array, isArray = object.([]interface{})
+	}
+	return array, isArray
 }
 
 func (f *FormatSql) formatMap(fieldName string, fieldMap map[string]interface{}, statements *[]string) (err error) {
@@ -107,6 +156,18 @@ func (f *FormatSql) formatMap(fieldName string, fieldMap map[string]interface{},
 		if fieldMapping, fieldMappingExists := tableMapping.fieldMap[fieldName]; fieldMappingExists {
 			fields = append(fields, fieldMapping.Column)
 			fieldValues = append(fieldValues, getSqlValue(fieldValue))
+		} else if fieldMap, isMap := getMap(fieldValue); isMap {
+			if err = f.formatMap(fieldName, fieldMap, statements); err != nil {
+				return err
+			}
+		} else if array, isArray := getArray(fieldValue); isArray {
+			for _, item := range array {
+				if itemMap, isItemMap := getMap(item); isItemMap {
+					if err = f.formatMap(fieldName, itemMap, statements); err != nil {
+						return err
+					}
+				}
+			}
 		}
 	}
 	statement := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s);",

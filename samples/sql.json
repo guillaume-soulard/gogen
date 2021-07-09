@@ -127,22 +127,6 @@
       "format": {
         "type": "sql",
         "options": {
-          "tables": [
-            {
-              "name": "user",
-              "table": "users",
-              "fields": [
-                {
-                  "name": "id",
-                  "column": "user_id"
-                },
-                {
-                  "name": "firstName",
-                  "column": "firstName"
-                }
-              ]
-            }
-          ],
           "batchSize": 10
         }
       }
