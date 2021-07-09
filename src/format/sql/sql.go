@@ -14,7 +14,7 @@ type BuilderSql struct{}
 func (b BuilderSql) Build(configuration configuration.FormatConfiguration) (result common.Format, err error) {
 	var tables []tableMapping
 	var tableConfig string
-	if tableConfig, err = configuration.Options.GetStringOrDefault("tables", "[]"); err != nil {
+	if tableConfig, err = configuration.Options.GetObjectAsStringOrDefault("tables", "[]"); err != nil {
 		return result, err
 	}
 	if err = json.Unmarshal([]byte(tableConfig), &tables); err != nil {
@@ -64,95 +64,76 @@ func (f *FormatSql) Begin() (err error) {
 }
 
 func (f *FormatSql) Format(generatedObject common.GeneratedObject, context *common.FormatContext) (result string, err error) {
+	var objectMap map[string]interface{}
+	var isMap bool
 	statements := make([]string, 0)
-	if mapValue, isMap := generatedObject.Object.(map[string]interface{}); isMap {
-		if err = f.generateSqlForObject([]string{""}, mapValue, &statements, context); err != nil {
-			return result, err
-		}
-		result = fmt.Sprintf("%s\n", strings.Join(statements, "\n"))
-	} else {
+	if objectMap, isMap = getMap(generatedObject.Object); !isMap {
 		err = errors.New("root is not an object")
+		return result, err
 	}
+	err = f.formatObject(objectMap, &statements)
+	result = strings.Join(statements, "\n")
 	return result, err
+}
+
+func (f *FormatSql) formatObject(object map[string]interface{}, statements *[]string) (err error) {
+	for fieldName, value := range object {
+		if fieldMap, isFieldMap := getMap(value); isFieldMap {
+			if err = f.formatMap(fieldName, fieldMap, statements); err != nil {
+				return err
+			}
+		}
+	}
+	return err
+}
+
+func getMap(object interface{}) (objectMap map[string]interface{}, isMap bool) {
+	if object != nil {
+		objectMap, isMap = object.(map[string]interface{})
+	} else {
+		isMap = false
+	}
+	return objectMap, isMap
+}
+
+func (f *FormatSql) formatMap(fieldName string, fieldMap map[string]interface{}, statements *[]string) (err error) {
+	var tableMapping tableMapping
+	if tableMapping, err = f.getTableMappingOf(fieldName); err != nil {
+		return err
+	}
+	fields := make([]string, 0)
+	fieldValues := make([]string, 0)
+	for fieldName, fieldValue := range fieldMap {
+		if fieldMapping, fieldMappingExists := tableMapping.fieldMap[fieldName]; fieldMappingExists {
+			fields = append(fields, fieldMapping.Column)
+			fieldValues = append(fieldValues, getSqlValue(fieldValue))
+		}
+	}
+	statement := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s);",
+		tableMapping.Table,
+		strings.Join(fields, ","),
+		strings.Join(fieldValues, ","),
+	)
+	*statements = append(*statements, statement)
+	return err
+}
+
+func getSqlValue(fieldValue interface{}) string {
+	if _, isString := fieldValue.(string); isString {
+		return fmt.Sprintf("'%v'", fieldValue)
+	} else {
+		return fmt.Sprintf("%v", fieldValue)
+	}
+}
+
+func (f *FormatSql) getTableMappingOf(name string) (mapping tableMapping, err error) {
+	var exists bool
+	if mapping, exists = f.tables[name]; !exists {
+		err = errors.New(fmt.Sprintf("no sql mapping found for %s", name))
+	}
+	return mapping, err
 }
 
 func (f *FormatSql) End() (err error) {
 	return err
-}
-
-func (f *FormatSql) generateSqlForObject(fieldPath []string, object map[string]interface{}, statements *[]string, context *common.FormatContext) (err error) {
-	for objectField, objectValue := range object {
-		var objectMap map[string]interface{}
-		var isMap bool
-		if objectMap, isMap = objectValue.(map[string]interface{}); !isMap {
-			return err
-		}
-		if tableMapping, exists := f.tables[objectField]; exists {
-			if err = f.generateSqlForObjectWithMapping(tableMapping, objectMap, statements, context); err != nil {
-				return err
-			}
-		} else {
-			if err = f.generateSqlForObjectWithoutMapping(append(fieldPath, objectField), objectMap, statements, context); err != nil {
-				return err
-			}
-		}
-	}
-	return err
-}
-
-func (f *FormatSql) generateSqlForObjectWithMapping(mapping tableMapping, object map[string]interface{}, statements *[]string, context *common.FormatContext) (err error) {
-	columnNames := make([]string, len(mapping.Fields))
-	values := make([]string, len(mapping.Fields))
-	var exists bool
-	var value interface{}
-	for i, field := range mapping.Fields {
-		columnNames[i] = field.Column
-		if value, exists = common.GetValue(field, []string{field.Name}); !exists {
-			err = errors.New(fmt.Sprintf("field %s not found in generated object", field.Name))
-			return err
-		}
-		values[i] = f.getSqlValueFor(value, context)
-	}
-	buildSqlStatement(mapping.Table, columnNames, values, statements)
-	return err
-}
-
-func (f *FormatSql) getSqlValueFor(value interface{}, context *common.FormatContext) string {
-	if stringValue, isString := value.(string); isString {
-		return fmt.Sprintf("'%s'", stringValue)
-	} else {
-		return fmt.Sprintf("%v", value)
-	}
-}
-
-func (f *FormatSql) generateSqlForObjectWithoutMapping(fieldPath []string, object map[string]interface{}, statements *[]string, formatContext *common.FormatContext) (err error) {
-	columnNames := make([]string, 0)
-	values := make([]string, 0)
-	for fieldName, fieldValue := range object {
-		if mapValue, isMap := fieldValue.(map[string]interface{}); isMap {
-			if err = f.generateSqlForObject(append(fieldPath, fieldName), mapValue, statements, nil); err != nil {
-				return err
-			}
-		} else if array, isArray := fieldValue.([]interface{}); isArray {
-			for _, arrayItem := range array {
-				if mapValue, isMap := arrayItem.(map[string]interface{}); isMap {
-					if err = f.generateSqlForObject(append(fieldPath, fieldName), mapValue, statements, formatContext); err != nil {
-						return err
-					}
-				}
-			}
-		} else {
-			columnNames = append(columnNames, fieldName)
-			values = append(values, f.getSqlValueFor(fieldValue, nil))
-		}
-	}
-	buildSqlStatement(fieldPath[len(fieldPath)-1], columnNames, values, statements)
-	return err
-}
-
-func buildSqlStatement(tableName string, columns []string, values []string, statements *[]string) {
-	if len(columns) > 0 && len(values) > 0 {
-		statement := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s);", tableName, strings.Join(columns, ","), strings.Join(values, ","))
-		*statements = append([]string{statement}, *statements...)
-	}
 }

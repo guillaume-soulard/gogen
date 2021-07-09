@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"encoding/json"
 	"strconv"
 	"strings"
 )
@@ -45,7 +46,12 @@ type Options map[string]interface{}
 
 func (o Options) GetBoolOrDefault(option string, defaultValue bool) (result bool, err error) {
 	var optionValue interface{}
-	optionValue = o.Get(option)
+	var exists bool
+	optionValue, exists = o.Get(option)
+	if !exists {
+		result = defaultValue
+		return result, err
+	}
 	if optionBool, isBool := optionValue.(bool); isBool {
 		result = optionBool
 	} else if optionString, isString := optionValue.(string); isString {
@@ -59,7 +65,11 @@ func (o Options) GetBoolOrDefault(option string, defaultValue bool) (result bool
 }
 
 func (o Options) GetStringOrDefault(option string, defaultValue string) (result string, err error) {
-	optionValue := o.Get(option)
+	optionValue, exists := o.Get(option)
+	if !exists {
+		result = defaultValue
+		return result, err
+	}
 	if optionValueString, isString := optionValue.(string); isString && optionValueString != "" {
 		result = optionValueString
 	} else {
@@ -68,8 +78,21 @@ func (o Options) GetStringOrDefault(option string, defaultValue string) (result 
 	return result, err
 }
 
-func (o Options) Get(option string) (result interface{}) {
-	result = ""
+func (o Options) GetObjectAsStringOrDefault(option string, defaultValue string) (result string, err error) {
+	optionValue, exists := o.Get(option)
+	if !exists {
+		result = defaultValue
+		return result, err
+	}
+	var bytes []byte
+	if bytes, err = json.Marshal(optionValue); err != nil {
+		return result, err
+	}
+	result = string(bytes)
+	return result, err
+}
+
+func (o Options) Get(option string) (result interface{}, exists bool) {
 	pathElement := strings.Split(option, ".")
 	var currentObject map[string]interface{}
 	currentObject = o
@@ -79,11 +102,12 @@ func (o Options) Get(option string) (result interface{}) {
 				currentObject = mapValue
 			} else if stringValue := pathValue; i == len(pathElement)-1 {
 				result = stringValue
-				return result
+				exists = true
+				return result, exists
 			}
 		}
 	}
-	return result
+	return result, exists
 }
 
 func EmptyOptions() Options {

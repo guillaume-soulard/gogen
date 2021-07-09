@@ -135,6 +135,10 @@
                 {
                   "name": "id",
                   "column": "user_id"
+                },
+                {
+                  "name": "firstName",
+                  "column": "firstName"
                 }
               ]
             }
